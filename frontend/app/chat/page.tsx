@@ -1,8 +1,11 @@
-import { Sparkles, Image as ImageIcon, MapPin, Send } from "lucide-react";
+import { Sparkles, Image as ImageIcon, MapPin, Send,Calendar, DollarSign, Users } from "lucide-react";
 
 export default function ChatPage() {
   return (
-    <div className="flex flex-col h-full bg-white rounded-3xl shadow-sm border overflow-hidden">
+    <div className="flex h-full gap-4 overflow-hidden">
+      
+      {/* Coluna Esquerda - Chat */}
+      <div className="flex-1 flex flex-col h-full bg-white rounded-3xl shadow-sm border overflow-hidden">
       
       {/* Cabeçalho do Chat */}
       <header className="p-6 border-b flex items-center gap-4">
@@ -70,7 +73,91 @@ export default function ChatPage() {
             O ViajaAI pode cometer erros. Considere verificar as informações.
          </p>
       </footer>
+      </div>
+
+      {/* Coluna Direita - Roteiro de Viagem */}
+      <div className="flex-1">
+        <Roteiro />
+      </div>
       
+    </div>
+  );
+}
+
+export function Roteiro() {
+  return (
+    <div className="flex flex-col h-full bg-white rounded-3xl shadow-sm border overflow-hidden">
+      
+      {/* Cabeçalho do Roteiro */}
+      <header className="p-6 border-b flex items-center gap-4">
+        <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-[#0F2942]">
+          <MapPin size={24} strokeWidth={1.5} />
+        </div>
+        <div className="flex flex-col">
+          <h2 className="font-bold text-[#0F2942] text-xl">Roteiro da Viagem</h2>
+          <p className="text-sm text-gray-400">Seu itinerário</p>
+        </div>
+      </header>
+
+      {/* Conteúdo do Roteiro (que deve vir das respostas do Chat)*/}
+      <div className="flex-1 p-6 overflow-y-auto flex flex-col gap-6">
+        
+        {/* Informações Gerais */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3 p-4 bg-[#FCF3F3] rounded-2xl">
+            <MapPin size={20} className="text-[#D68585]" strokeWidth={1.5} />
+            <div className="flex-1">
+              <p className="text-xs text-gray-500 font-medium">Destino</p>
+              <p className="text-sm font-semibold text-[#0F2942]">Rio de Janeiro</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-4 bg-[#FCF3F3] rounded-2xl">
+            <Users size={20} className="text-[#D68585]" strokeWidth={1.5} />
+            <div className="flex-1">
+              <p className="text-xs text-gray-500 font-medium">Viajantes</p>
+              <p className="text-sm font-semibold text-[#0F2942]">2 pessoas</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-4 bg-[#FCF3F3] rounded-2xl">
+            <DollarSign size={20} className="text-[#D68585]" strokeWidth={1.5} />
+            <div className="flex-1">
+              <p className="text-xs text-gray-500 font-medium">Orçamento</p>
+              <p className="text-sm font-semibold text-[#0F2942]">R$ 5.000</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-4 bg-[#FCF3F3] rounded-2xl">
+            <Calendar size={20} className="text-[#D68585]" strokeWidth={1.5} />
+            <div className="flex-1">
+              <p className="text-xs text-gray-500 font-medium">Datas</p>
+              <p className="text-sm font-semibold text-[#0F2942]">20-23 de Maio</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Divisor */}
+        <div className="border-t border-gray-100"></div>
+
+        {/* Atividades do Roteiro (que vira do BD)*/}
+        <div className="space-y-3">
+          <h3 className="font-semibold text-[#0F2942] text-sm">Atividades Planejadas</h3>
+          
+          {[
+            { day: "Dia 1", activity: "Chegada e check-in no hotel" },
+            { day: "Dia 2", activity: "Visita ao Cristo Redentor" },
+            { day: "Dia 3", activity: "Praia de Copacabana" },
+            { day: "Dia 4", activity: "Explorar o Bairro da Lapa" },
+            { day: "Dia 4", activity: "Check-out no hotel" },
+          ].map((item, idx) => (
+            <div key={idx} className="p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#D68585]/30 transition-colors">
+              <p className="text-xs font-semibold text-[#D68585]">{item.day}</p>
+              <p className="text-sm text-[#0F2942] mt-1">{item.activity}</p>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
