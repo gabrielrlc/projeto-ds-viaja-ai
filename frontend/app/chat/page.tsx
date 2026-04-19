@@ -1,13 +1,20 @@
-import { Sparkles, Image as ImageIcon, MapPin, Send,Calendar, DollarSign, Users } from "lucide-react";
+import { CardVoo } from "@/components/c_roteiro/card_voo";
+import { CardHotel } from "@/components/c_roteiro/card_hotel";
+import { HeaderRoteiro } from "@/components/c_roteiro/header";
+import { 
+  Sparkles, Image as ImageIcon, MapPin, Send, Calendar, DollarSign, Users,
+  Share2, Download, Link as LinkIcon, Plane, Hotel, Star, Waves, Coffee,
+  Dumbbell, Utensils, CheckCircle2, ChevronDown,
+  Wifi} from "lucide-react";
 
 export default function ChatPage() {
   return (
     <div className="flex h-full gap-4 overflow-hidden">
       
-      {/* Coluna Esquerda - Chat */}
+      {/* coluna esquerda - chat */}
       <div className="flex-1 flex flex-col h-full bg-white rounded-3xl shadow-sm border overflow-hidden">
       
-      {/* Cabeçalho do Chat */}
+      {/* cabeçalho do chat */}
       <header className="p-6 border-b flex items-center gap-4">
          <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-[#0F2942]">
             <Sparkles size={24} strokeWidth={1.5} />
@@ -18,17 +25,17 @@ export default function ChatPage() {
          </div>
       </header>
 
-      {/* Espaço das mensagens (Estático para integração futura) */}
+      {/* espaço de mensagens */}
       <div className="flex-1 p-6 bg-white overflow-y-auto flex flex-col gap-4">
         
-        {/* Balão de Mensagem do Bot */}
+        {/* balão de mensagem do bot */}
         <div className="max-w-[85%]">
           <div className="p-4 rounded-2xl border border-[#EACFC4] text-[#0F2942] text-[15px] leading-relaxed">
             Olá! Sou o ViajaAI, seu planejador de viagens inteligente. Para onde você gostaria de ir?
           </div>
         </div>
 
-        {/* Botões de Sugestão de Destino */}
+        {/* botões de sugestão */}
         <div className="flex flex-wrap gap-3 mt-1">
           {["Rio de Janeiro", "Paris", "Tóquio", "Nova York"].map((city) => (
             <button 
@@ -40,12 +47,12 @@ export default function ChatPage() {
           ))}
         </div>
 
-        {/* Horário da mensagem */}
+        {/* horário da mensagem */}
         <span className="text-xs text-gray-400 mt-1">09:00</span>
 
       </div>
 
-      {/* Footer / Input de mensagens */}
+      {/* Footer / Input */}
       <footer className="p-6 pt-2 bg-white flex flex-col gap-3">
          
          <div className="flex items-center gap-3 p-2 rounded-2xl border bg-white shadow-sm focus-within:ring-2 focus-within:ring-[#D68585]/30 transition-all">
@@ -57,7 +64,7 @@ export default function ChatPage() {
               <MapPin size={22} strokeWidth={1.5} />
             </button>
 
-            {/* Campo de texto estático */}
+            {/* campo de texto */}
             <input 
               type="text" 
               placeholder="Digite sua resposta ou peça sugestões..." 
@@ -75,7 +82,7 @@ export default function ChatPage() {
       </footer>
       </div>
 
-      {/* Coluna Direita - Roteiro de Viagem */}
+      {/* coluna direita - roteiro */}
       <div className="flex-1">
         <Roteiro />
       </div>
@@ -86,77 +93,72 @@ export default function ChatPage() {
 
 export function Roteiro() {
   return (
-    <div className="flex flex-col h-full bg-white rounded-3xl shadow-sm border overflow-hidden">
+    <div className="flex flex-col h-full bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/50 overflow-hidden">
       
-      {/* Cabeçalho do Roteiro */}
-      <header className="p-6 border-b flex items-center gap-4">
-        <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-[#0F2942]">
-          <MapPin size={24} strokeWidth={1.5} />
-        </div>
-        <div className="flex flex-col">
-          <h2 className="font-bold text-[#0F2942] text-xl">Roteiro da Viagem</h2>
-          <p className="text-sm text-gray-400">Seu itinerário</p>
-        </div>
-      </header>
+      {/* header do roteiro */}
+      <HeaderRoteiro 
+        titulo="12 a 16 Ago no Rio de Janeiro"
+        dataResumo="12–16 Ago"
+        orcamento="R$ 10k - 25k"
+        viajantes="1 pessoa"
+        rota="Recife - Rio de Janeiro"
+      />
 
-      {/* Conteúdo do Roteiro (que deve vir das respostas do Chat)*/}
+      {/* conteúdo scroll */}
       <div className="flex-1 p-6 overflow-y-auto flex flex-col gap-6">
-        
-        {/* Informações Gerais */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 p-4 bg-[#FCF3F3] rounded-2xl">
-            <MapPin size={20} className="text-[#D68585]" strokeWidth={1.5} />
-            <div className="flex-1">
-              <p className="text-xs text-gray-500 font-medium">Destino</p>
-              <p className="text-sm font-semibold text-[#0F2942]">Rio de Janeiro</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-4 bg-[#FCF3F3] rounded-2xl">
-            <Users size={20} className="text-[#D68585]" strokeWidth={1.5} />
-            <div className="flex-1">
-              <p className="text-xs text-gray-500 font-medium">Viajantes</p>
-              <p className="text-sm font-semibold text-[#0F2942]">2 pessoas</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-4 bg-[#FCF3F3] rounded-2xl">
-            <DollarSign size={20} className="text-[#D68585]" strokeWidth={1.5} />
-            <div className="flex-1">
-              <p className="text-xs text-gray-500 font-medium">Orçamento</p>
-              <p className="text-sm font-semibold text-[#0F2942]">R$ 5.000</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 p-4 bg-[#FCF3F3] rounded-2xl">
-            <Calendar size={20} className="text-[#D68585]" strokeWidth={1.5} />
-            <div className="flex-1">
-              <p className="text-xs text-gray-500 font-medium">Datas</p>
-              <p className="text-sm font-semibold text-[#0F2942]">20-23 de Maio</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Divisor */}
-        <div className="border-t border-gray-100"></div>
-
-        {/* Atividades do Roteiro (que vira do BD)*/}
-        <div className="space-y-3">
-          <h3 className="font-semibold text-[#0F2942] text-sm">Atividades Planejadas</h3>
           
-          {[
-            { day: "Dia 1", activity: "Chegada e check-in no hotel" },
-            { day: "Dia 2", activity: "Visita ao Cristo Redentor" },
-            { day: "Dia 3", activity: "Praia de Copacabana" },
-            { day: "Dia 4", activity: "Explorar o Bairro da Lapa" },
-            { day: "Dia 4", activity: "Check-out no hotel" },
-          ].map((item, idx) => (
-            <div key={idx} className="p-3 bg-gray-50 rounded-lg border border-gray-100 hover:border-[#D68585]/30 transition-colors">
-              <p className="text-xs font-semibold text-[#D68585]">{item.day}</p>
-              <p className="text-sm text-[#0F2942] mt-1">{item.activity}</p>
+          {/* voo de ida */}
+          <CardVoo 
+            tipo="Ida"
+            data="ter., 12 de ago."
+            preco="R$ 650"
+            co2="181"
+            partida={{ hora: "08:00", aeroporto: "Aeroporto Internacional do Recife (REC)" }}
+            duracao="3h 15min"
+            detalhes="GOL Econômica • Boeing 737 • G3 1554"
+            chegada={{ hora: "11:15", aeroporto: "Aeroporto Internacional do Rio de Janeiro (GIG)" }}
+          />
+
+          {/* voo de volta*/}
+          <CardVoo 
+            tipo="Volta"
+            data="sáb., 16 de ago."
+            preco="R$ 600"
+            co2="181"
+            partida={{ hora: "15:00", aeroporto: "Aeroporto Internacional do Rio de Janeiro (GIG)" }}
+            duracao="3h 15min"
+            detalhes="GOL Econômica • Boeing 737 • G3 1555"
+            chegada={{ hora: "18:15", aeroporto: "Aeroporto Internacional do Recife (REC)" }}
+          />
+
+        <CardHotel 
+          nome="Copacabana Palace"
+          estrelas={5}
+          categoria="Hotel de Luxo"
+          noites={4}
+          precoTotal="R$ 8.400"
+          localizacao="Copacabana"
+          precoNoite="R$ 2.100"
+          checkIn="ter., 12 de ago. às 14:00"
+          checkOut="sáb., 16 de ago. às 12:00"
+          comodidades={["Wi-Fi Grátis", "Piscina", "Café da Manhã", "Academia", "Spa", "Restaurante"]}
+        />
+
+        {/* div dia 1 */}
+        <div className="mt-4">
+          <div className="flex justify-between items-center cursor-pointer group">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="text-[#A63C3C]" size={28} strokeWidth={2} />
+              <h3 className="text-[#A63C3C] text-xl font-bold group-hover:underline">Dia 1 — Chegada e Boas-vindas</h3>
             </div>
-          ))}
+            <ChevronDown className="text-gray-400 transition-transform" />
+          </div>
+          <p className="text-xs font-bold text-gray-400 tracking-widest uppercase mt-2 ml-10">12 Agosto 2025</p>
+          
+          {/* Linha vermelha lateral que indica o corpo do dia */}
+          <div className="ml-3.5 border-l-2 border-[#FCF3F3] h-20 mt-4"></div>
         </div>
+
       </div>
     </div>
   );
