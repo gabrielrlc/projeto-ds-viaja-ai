@@ -235,9 +235,6 @@ export default function ExplorarPage() {
                 <header className="w-full bg-white/50 backdrop-blur-md border-b border-white/40 px-8 py-6 sticky top-0 z-20">
                     <div className="max-w-8xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div className="flex items-center gap-4">
-                            {/* <div className="w-12 h-12 bg-white/80 shadow-sm rounded-full flex items-center justify-center text-[#0F2942]">
-                                <Compass size={24} strokeWidth={1.5} />
-                            </div> */}
                             <div>
                                 <h1 className="font-bold text-[#0F2942] text-2xl">Descobrir Destinos</h1>
                                 <p className="text-sm text-gray-700 font-medium">Inspirações para a sua próxima viagem</p>
