@@ -5,6 +5,7 @@ Plataforma de roteiros de viagem personalizados gerados por IA, com busca real d
 ## Tecnologias
 
 **Backend**
+
 - [FastAPI](https://fastapi.tiangolo.com/) — framework web
 - [Anthropic Claude Haiku](https://www.anthropic.com/) — geração de roteiros com IA
 - [SerpAPI](https://serpapi.com/) — busca de voos e hotéis (Google Flights / Google Hotels)
@@ -36,6 +37,7 @@ projeto-ds-viaja-ai/
 ## Como rodar o backend
 
 ### 1. Pré-requisitos
+
 - Python 3.11+
 
 ### 2. Instalar dependências
@@ -65,33 +67,33 @@ A documentação interativa da API estará em `http://localhost:8000/docs`.
 
 ## Variáveis de ambiente
 
-| Variável | Onde obter | Obrigatória |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) | Sim |
-| `SERPAPI_API_KEY` | [serpapi.com](https://serpapi.com) | Sim |
-| `TRIPADVISOR_API_KEY` | [tripadvisor.com/developers](https://tripadvisor.com/developers) | Não* |
-| `OPENWEATHERMAP_API_KEY` | [openweathermap.org/api](https://openweathermap.org/api) | Não* |
+| Variável                 | Onde obter                                                       | Obrigatória |
+| ------------------------ | ---------------------------------------------------------------- | ----------- |
+| `ANTHROPIC_API_KEY`      | [console.anthropic.com](https://console.anthropic.com)           | Sim         |
+| `SERPAPI_API_KEY`        | [serpapi.com](https://serpapi.com)                               | Sim         |
+| `TRIPADVISOR_API_KEY`    | [tripadvisor.com/developers](https://tripadvisor.com/developers) | Não\*       |
+| `OPENWEATHERMAP_API_KEY` | [openweathermap.org/api](https://openweathermap.org/api)         | Não\*       |
 
-*Se não configurada, o serviço usa dados mock automaticamente — o sistema continua funcionando.
+\*Se não configurada, o serviço usa dados mock automaticamente — o sistema continua funcionando.
 
 ## Endpoints principais
 
 ### Chat (fluxo principal)
 
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `POST` | `/api/chat/iniciar` | Inicia uma nova sessão de planejamento |
-| `POST` | `/api/chat/mensagem` | Envia mensagem e avança o fluxo |
-| `DELETE` | `/api/chat/{sessao_id}` | Encerra a sessão |
+| Método   | Endpoint                | Descrição                              |
+| -------- | ----------------------- | -------------------------------------- |
+| `POST`   | `/api/chat/iniciar`     | Inicia uma nova sessão de planejamento |
+| `POST`   | `/api/chat/mensagem`    | Envia mensagem e avança o fluxo        |
+| `DELETE` | `/api/chat/{sessao_id}` | Encerra a sessão                       |
 
 ### Viagens anteriores
 
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `GET` | `/api/viagens` | Lista todas as viagens salvas |
-| `GET` | `/api/viagens/{id}` | Retorna roteiro completo de uma viagem |
-| `POST` | `/api/viagens/{id}/repetir` | Repete uma viagem com novas datas |
-| `DELETE` | `/api/viagens/{id}` | Remove uma viagem do histórico |
+| Método   | Endpoint                    | Descrição                              |
+| -------- | --------------------------- | -------------------------------------- |
+| `GET`    | `/api/viagens`              | Lista todas as viagens salvas          |
+| `GET`    | `/api/viagens/{id}`         | Retorna roteiro completo de uma viagem |
+| `POST`   | `/api/viagens/{id}/repetir` | Repete uma viagem com novas datas      |
+| `DELETE` | `/api/viagens/{id}`         | Remove uma viagem do histórico         |
 
 ## Fluxo do chat
 
@@ -101,6 +103,7 @@ iniciar → destino → pessoas → orçamento → datas
 ```
 
 Cada etapa retorna um JSON com:
+
 - `etapa_atual` — etapa em que o chat está
 - `mensagem_bot` — texto a exibir na interface
 - `opcoes` — botões de ação (quando aplicável)
