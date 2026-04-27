@@ -95,3 +95,15 @@ docker-compose.override.yml
 # =========================
 .DS_Store
 Thumbs.db
+# =========================
+# PYTHON / BACKEND
+# =========================
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.pytest_cache/
+alembic/versions/*.pyc

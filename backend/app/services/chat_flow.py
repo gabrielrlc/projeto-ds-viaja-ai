@@ -1,8 +1,8 @@
-from models.chat import SessaoViagem, RespostaChat
-from services.serpapi import buscar_voos, buscar_hoteis
-from services.tripadvisor import buscar_atracoes
-from services.clima import buscar_clima
-from ai.llm_client import gerar_roteiro
+from app.schemas.chat import SessaoViagem, RespostaChat
+from app.services.serpAPI import buscar_voos, buscar_hoteis
+from app.services.tripAdvisor import buscar_atracoes
+from app.services.openWeather import buscar_clima
+from app.ia.llm_client import gerar_roteiro
 import re
 
 
