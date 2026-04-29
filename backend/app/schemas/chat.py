@@ -11,9 +11,7 @@ class RespostaChat(BaseModel):
     sessao_id: str
     etapa_atual: str
     mensagem_bot: str
-    opcoes: Optional[list[str]] = None      
-    dados_extra: Optional[dict] = None     
-    roteiro: Optional[dict] = None          
+    roteiro: Optional[str] = None
     
 # --- Estado da sessão em memória ---
 class SessaoViagem(BaseModel):
@@ -28,8 +26,7 @@ class SessaoViagem(BaseModel):
     estilo: Optional[str] = None
     interesses: Optional[str] = None
     voos_disponiveis: Optional[list] = None
-    voo_ida_escolhido: Optional[str] = None
-    voo_volta_escolhido: Optional[str] = None
+    voo_escolhido: Optional[dict] = None
     hoteis_disponiveis: Optional[list] = None
     hotel_escolhido: Optional[dict] = None
 

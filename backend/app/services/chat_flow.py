@@ -5,6 +5,7 @@ from app.services.openWeather import buscar_clima
 from app.ia.llm_client import gerar_roteiro
 import re
 
+
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 def _extrair_numero(texto: str) -> float | None:
@@ -29,28 +30,19 @@ def _extrair_data(texto: str) -> str | None:
 # ── Processador principal ─────────────────────────────────────────────────────
 
 async def processar_mensagem(sessao: SessaoViagem, mensagem: str) -> RespostaChat:
-    
+    """Recebe a mensagem do usuário e avança o fluxo de acordo com a etapa."""
+
     etapa = sessao.etapa
     msg = mensagem.strip()
 
     # ── ETAPA 1: Destino ──────────────────────────────────────────────────────
     if etapa == "destino":
         sessao.destino = msg
-        sessao.etapa = "origem"
-        return RespostaChat(
-            sessao_id=sessao.sessao_id,
-            etapa_atual="origem",
-            mensagem_bot=f"Ótima escolha! *{sessao.destino}* vai ser incrível 🌍\n\nDe qual cidade você vai partir?",
-        )
-
-    # ── ETAPA 1.5: Origem ─────────────────────────────────────────────────────
-    if etapa == "origem":
-        sessao.origem = msg
         sessao.etapa = "pessoas"
         return RespostaChat(
             sessao_id=sessao.sessao_id,
             etapa_atual="pessoas",
-            mensagem_bot="Anotado! ✈️\n\nQuantas pessoas vão viajar?",
+            mensagem_bot=f"Ótima escolha! *{sessao.destino}* vai ser incrível 🌍\n\nQuantas pessoas vão viajar?",
             opcoes=["1", "2", "3", "4", "5+"],
         )
 
@@ -76,74 +68,72 @@ async def processar_mensagem(sessao: SessaoViagem, mensagem: str) -> RespostaCha
             mensagem_bot="Perfeito! 💰\n\nAgora me diga as datas da viagem.\nQual é a data de ida? (formato DD/MM/AAAA)",
         )
 
-    # ── ETAPA 4: Datas  ────────────────────────────────────────────────────────
+    # ── ETAPA 4: Datas ────────────────────────────────────────────────────────
     if etapa == "datas":
         if not sessao.data_ida:
             data = _extrair_data(msg)
             if not data:
-                return RespostaChat(sessao_id=sessao.sessao_id, etapa_atual="datas", mensagem_bot="Pode repetir a data de ida? (Ex: 15/07/2025)")
+                return RespostaChat(
+                    sessao_id=sessao.sessao_id,
+                    etapa_atual="datas",
+                    mensagem_bot="Não consegui entender a data 😅 Pode escrever no formato DD/MM/AAAA? Ex: 15/07/2025",
+                )
             sessao.data_ida = data
             return RespostaChat(
                 sessao_id=sessao.sessao_id,
                 etapa_atual="datas",
-                mensagem_bot=f"Ida: {msg} ✅\n\nE a data de volta? (DD/MM/AAAA ou escreva 'só ida')",
+                mensagem_bot=f"Data de ida: {msg} ✅\n\nE a data de volta? (DD/MM/AAAA)\nSe for só ida, escreva \"só ida\".",
             )
         else:
-            if "só ida" in msg.lower():
+            if "só ida" in msg.lower() or "somente ida" in msg.lower():
                 sessao.data_volta = None
             else:
-                sessao.data_volta = _extrair_data(msg)
+                data = _extrair_data(msg)
+                if not data:
+                    return RespostaChat(
+                        sessao_id=sessao.sessao_id,
+                        etapa_atual="datas",
+                        mensagem_bot="Não entendi a data de volta. Tente DD/MM/AAAA ou escreva \"só ida\".",
+                    )
+                sessao.data_volta = data
 
-            # Busca voos de IDA
-            sessao.etapa = "voo_ida"
-            voos = await buscar_voos(sessao.origem, sessao.destino, sessao.data_ida, sessao.data_volta)
+            # Avança para busca de passagens
+            sessao.etapa = "passagens"
+            voos = await buscar_voos(
+                sessao.origem, sessao.destino,
+                sessao.data_ida, sessao.data_volta
+            )
+            # Normaliza para lista (SerpAPI retorna um dict com o melhor voo)
             sessao.voos_disponiveis = [voos] if isinstance(voos, dict) and voos else []
 
             if not sessao.voos_disponiveis:
+                sessao.voo_escolhido = {}
                 sessao.etapa = "hoteis"
                 return await _etapa_hoteis(sessao)
 
-            opcoes_voo = [f"{v['companhia']} — R$ {v['preco']}" for v in sessao.voos_disponiveis]
+            opcoes_voo = [
+                f"{v['companhia']} — R$ {v['preco']} ({v['escalas']} escala(s))"
+                for v in sessao.voos_disponiveis
+            ]
             return RespostaChat(
                 sessao_id=sessao.sessao_id,
-                etapa_atual="voo_ida",
-                mensagem_bot="Encontrei estas opções de voo de IDA. Qual você prefere?",
+                etapa_atual="passagens",
+                mensagem_bot="Encontrei as seguintes opções de voo ✈️\n\nQual você prefere?",
                 opcoes=opcoes_voo,
-                dados_extra={"voos": sessao.voos_disponiveis}
+                dados_extra={"voos": sessao.voos_disponiveis},
             )
 
-# ── ETAPA 5: Escolha de IDA ───────────────────────────────────────────
-    if etapa == "voo_ida":
-        # Em vez de salvar só o texto, vamos pegar o objeto do voo baseado na escolha
+    # ── ETAPA 5: Escolha de passagem ─────────────────────────────────────────
+    if etapa == "passagens":
         try:
-            # Tenta encontrar qual voo o usuário escolheu pelo texto ou índice
-            # Aqui fazemos uma busca simples: se o texto da mensagem contém o nome da companhia e preço
-            escolhido = next((v for v in sessao.voos_disponiveis if v['companhia'] in msg), sessao.voos_disponiveis[0])
-            sessao.voo_ida_escolhido = escolhido # Agora salva o DICIONÁRIO completo
-        except:
-            sessao.voo_ida_escolhido = sessao.voos_disponiveis[0] if sessao.voos_disponiveis else {}
-        
-        if not sessao.data_volta:
-            sessao.etapa = "hoteis"
-            return await _etapa_hoteis(sessao)
-        
-        sessao.etapa = "voo_volta"
-        return RespostaChat(
-            sessao_id=sessao.sessao_id,
-            etapa_atual="voo_volta",
-            mensagem_bot="Ótimo! Agora escolha o voo de VOLTA:",
-            opcoes=["LATAM — R$ 420", "GOL — R$ 480"], 
-            dados_extra={"voos": sessao.voos_disponiveis} 
-        )
+            idx = int(msg) - 1
+            if 0 <= idx < len(sessao.voos_disponiveis or []):
+                sessao.voo_escolhido = sessao.voos_disponiveis[idx]
+            else:
+                sessao.voo_escolhido = (sessao.voos_disponiveis or [{}])[0]
+        except ValueError:
+            sessao.voo_escolhido = (sessao.voos_disponiveis or [{}])[0]
 
-    # ── ETAPA 5.5: Escolha de VOLTA ─────────────────────────────────────────
-    if etapa == "voo_volta":
-        try:
-            escolhido = sessao.voos_disponiveis[0] 
-            sessao.voo_volta_escolhido = escolhido
-        except:
-            sessao.voo_volta_escolhido = {}
-            
         sessao.etapa = "hoteis"
         return await _etapa_hoteis(sessao)
 
@@ -176,32 +166,30 @@ async def processar_mensagem(sessao: SessaoViagem, mensagem: str) -> RespostaCha
             mensagem_bot=f"Perfeito, viagem com estilo *{sessao.estilo}*! ✨\n\nPor último: tem algum interesse ou pedido especial para o roteiro?\nEx: quero visitar museus à tarde, prefiro restaurantes locais, viajo com criança pequena…",
         )
 
-# ── ETAPA 8: Interesses → Gera roteiro ───────────────────────────────────
+    # ── ETAPA 8: Interesses → Gera roteiro ───────────────────────────────────
     if etapa == "interesses":
         sessao.interesses = msg
-        sessao.etapa = "concluido"
+        sessao.etapa = "gerando"
 
         from datetime import date as _date
         import asyncio as _asyncio
 
-        # Cálculo de dias 
         num_dias = 5
         if sessao.data_ida and sessao.data_volta:
-            try:
-                ida = _date.fromisoformat(sessao.data_ida)
-                volta = _date.fromisoformat(sessao.data_volta)
-                num_dias = max((volta - ida).days, 1)
-            except ValueError:
-                pass
+            ida = _date.fromisoformat(sessao.data_ida)
+            volta = _date.fromisoformat(sessao.data_volta)
+            num_dias = max((volta - ida).days, 1)
 
-        # Busca de atrações e clima
+        # Busca atrações e clima em paralelo
         atracoes, clima = await _asyncio.gather(
             buscar_atracoes(sessao.destino),
             buscar_clima(sessao.destino, sessao.data_ida, sessao.data_volta),
             return_exceptions=True,
         )
-        if isinstance(atracoes, Exception): atracoes = []
-        if isinstance(clima, Exception): clima = {}
+        if isinstance(atracoes, Exception):
+            atracoes = []
+        if isinstance(clima, Exception):
+            clima = {}
 
         dados = {
             "destino": sessao.destino,
@@ -213,19 +201,19 @@ async def processar_mensagem(sessao: SessaoViagem, mensagem: str) -> RespostaCha
             "orcamento": sessao.orcamento,
             "estilo": sessao.estilo,
             "interesses": sessao.interesses,
-            "voo_ida": sessao.voo_ida_escolhido,    # Variável nova
-            "voo_volta": sessao.voo_volta_escolhido, # Variável nova
-            "hotel": sessao.hotel_escolhido,         # Ajustado
+            "voo": sessao.voo_escolhido or {},
+            "hoteis": [sessao.hotel_escolhido] if sessao.hotel_escolhido else [],
             "atracoes": atracoes,
             "clima": clima,
         }
 
         roteiro = await gerar_roteiro(dados)
-        
+        sessao.etapa = "concluido"
+
         return RespostaChat(
             sessao_id=sessao.sessao_id,
             etapa_atual="concluido",
-            mensagem_bot=f"Seu roteiro para *{sessao.destino}* está pronto! 🎉",
+            mensagem_bot=f"Seu roteiro para *{sessao.destino}* está pronto! 🎉\nAproveite cada momento da viagem ✈️",
             roteiro=roteiro,
         )
 
