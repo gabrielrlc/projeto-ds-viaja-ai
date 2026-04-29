@@ -1,12 +1,13 @@
-import anthropic
 import json
 import os
+from google import genai
+from google.genai import types
 
-client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY", ""))
+client = genai.Client()
 
 SYSTEM_PROMPT = """Você é um especialista em roteiros de viagem personalizados para brasileiros.
 Crie roteiros detalhados, práticos e com sugestões autênticas.
-Responda SOMENTE com JSON válido, sem texto antes ou depois, sem blocos de código markdown."""
+Responda SOMENTE com JSON válido."""
 
 
 def montar_prompt(dados: dict) -> str:
@@ -97,21 +98,15 @@ IMPORTANTE: Use a previsao do tempo para:
 
 
 async def gerar_roteiro(dados: dict) -> dict:
-    """Chama o Claude Haiku e retorna o roteiro como dicionário Python."""
     prompt = montar_prompt(dados)
 
-    message = client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=4096,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": prompt}],
+    response = await client.aio.models.generate_content(
+        model="gemini-3-flash-preview", 
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+            response_mime_type="application/json",
+        )
     )
 
-    resposta_texto = message.content[0].text.strip()
-
-    if resposta_texto.startswith("```"):
-        resposta_texto = resposta_texto.split("```")[1]
-        if resposta_texto.startswith("json"):
-            resposta_texto = resposta_texto[4:]
-
-    return json.loads(resposta_texto)
+    return json.loads(response.text)
