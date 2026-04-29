@@ -35,15 +35,15 @@ export function CardHotel({
   comodidades
 }: CardHotelProps) {
   return (
-    <div className="bg-white/90 rounded-2xl border border-white/60 shadow-sm p-6 shrink-0 w-full">
+    <div className="bg-white rounded-2xl border border-[#EACFC4] shadow-md p-6 shrink-0 w-full hover:shadow-lg transition-shadow">
       <div className="flex justify-between items-start mb-6">
         <div className="flex gap-4">
           <div className="w-12 h-12 rounded-full bg-[#FCF3F3] text-[#A63C3C] flex items-center justify-center shrink-0">
             <Hotel size={24} strokeWidth={1.5} />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-[#0F2942] text-lg">{nome}</h3>
+            <div className="flex items-center gap-2 overflow-hidden"> 
+              <h3 className="font-bold text-[#0F2942] text-lg truncate max-w-45" title={nome}>{nome}</h3>
               <div className="flex text-[#A63C3C]">
                 {Array.from({ length: estrelas }).map((_, i) => (
                   <Star key={i} size={14} fill="currentColor" />

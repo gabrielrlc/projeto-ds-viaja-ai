@@ -122,7 +122,7 @@ export default function ChatPage() {
       </header>
 
       {/* espaço de mensagens */}
-      <div className="flex-1 p-6 bg-white overflow-y-auto flex flex-col gap-4">
+      <div className="flex-1 p-6 bg-white overflow-y-auto flex flex-col gap-4 custom-scrollbar pr-2">
         
         {/* renderização das mensagens */}
         {mensagens.map((msg, idx) => (
@@ -150,10 +150,8 @@ export default function ChatPage() {
 
         {/* renderização dos botões da API */}
         {opcoes.length > 0 && !carregando && (
-          <div className={`flex gap-4 mt-2 overflow-x-auto pt-2 px-2 no-scrollbar ${
-            (opcoesObjetos.voos || opcoesObjetos.hoteis) 
-              ? "flex-nowrap items-start pb-12" // pb-12 dá espaço para a sombra e altura dos cards
-              : "flex-wrap items-center pb-6"
+          <div className={`flex gap-4 mt-2 overflow-x-auto py-4 px-1 custom-scrollbar shrink-0 ${
+            (opcoesObjetos.voos || opcoesObjetos.hoteis) ? "flex-nowrap items-stretch" : "flex-wrap items-center"
           }`}>
             {opcoes.map((opcao, idx) => {
               
@@ -165,28 +163,26 @@ export default function ChatPage() {
                   <div 
                     key={idx} 
                     onClick={() => enviarMensagem(opcao)} 
-                    className="cursor-pointer min-w-[340px] max-w-[340px] transition-all hover:translate-y-[-4px] active:scale-95 shrink-0"
+                    className="cursor-pointer min-w-[320px] transition-transform hover:-translate-y-1 active:scale-95 shrink-0"
                   >
-                    <div className="pointer-events-none rounded-3xl shadow-lg border border-black/5 overflow-hidden bg-white">
-                      <CardVoo 
-                        tipo={etapaAtual === "voo_ida" ? "Ida" : "Volta"}
-                        data={etapaAtual === "voo_ida" ? formatarDataExtenso(dadosColetados.datas?.split(" até ")[0] || "") : formatarDataExtenso(dadosColetados.datas?.split(" até ")[1] || dadosColetados.datas?.split(" até ")[0] || "")}
-                        preco={`R$ ${v.preco}`}
-                        co2={v.escalas === 0 ? "Voo Direto" : `${v.escalas} escala(s)`}
-                        partida={{ 
-                          hora: v.partida?.split(" ")[1] || v.partida || "08:00", 
-                          aeroporto: v.aeroporto_partida || "Origem", 
-                          cidade: etapaAtual === "voo_ida" ? dadosColetados.origem : dadosColetados.destino 
-                        }}
-                        chegada={{ 
-                          hora: v.chegada?.split(" ")[1] || v.chegada || "12:00", 
-                          aeroporto: v.aeroporto_chegada || "Destino", 
-                          cidade: etapaAtual === "voo_ida" ? dadosColetados.destino : dadosColetados.origem 
-                        }}
-                        duracao={formatarDuracao(v.duracao_minutos)}
-                        detalhes={v.companhia}
-                      />
-                    </div>
+                    <CardVoo 
+                      tipo={etapaAtual === "voo_ida" ? "Ida" : "Volta"}
+                      data={etapaAtual === "voo_ida" ? formatarDataExtenso(dadosColetados.datas?.split(" até ")[0] || "") : formatarDataExtenso(dadosColetados.datas?.split(" até ")[1] || dadosColetados.datas?.split(" até ")[0] || "")}
+                      preco={`R$ ${v.preco}`}
+                      co2={v.escalas === 0 ? "Voo Direto" : `${v.escalas} escala(s)`}
+                      partida={{ 
+                        hora: v.partida?.split(" ")[1] || v.partida || "08:00", 
+                        aeroporto: v.aeroporto_partida || "Origem", 
+                        cidade: etapaAtual === "voo_ida" ? dadosColetados.origem : dadosColetados.destino 
+                      }}
+                      chegada={{ 
+                        hora: v.chegada?.split(" ")[1] || v.chegada || "12:00", 
+                        aeroporto: v.aeroporto_chegada || "Destino", 
+                        cidade: etapaAtual === "voo_ida" ? dadosColetados.destino : dadosColetados.origem 
+                      }}
+                      duracao={formatarDuracao(v.duracao_minutos)}
+                      detalhes={v.companhia}
+                    />
                   </div>
                 );
               }
@@ -199,31 +195,29 @@ export default function ChatPage() {
                   <div 
                     key={idx} 
                     onClick={() => enviarMensagem(opcao)} 
-                    className="cursor-pointer min-w-[320px] max-w-[320px] transition-all hover:translate-y-[-4px] active:scale-95 shrink-0"
+                    className="cursor-pointer min-w-[320px] transition-transform hover:-translate-y-1 active:scale-95 shrink-0"
                   >
-                    <div className="pointer-events-none rounded-3xl shadow-lg border border-black/5 overflow-hidden bg-white">
-                      <CardHotel 
-                        nome={h.nome}
-                        estrelas={Math.floor(h.avaliacao || 4)}
-                        categoria="Hospedagem"
-                        noites={5}
-                        precoTotal={`R$ ${parseInt(h.preco_noite?.replace(/\D/g, '') || '0') * 5}`}
-                        localizacao={dadosColetados.destino}
-                        precoNoite={h.preco_noite}
-                        checkIn="14:00" checkOut="12:00"
-                        comodidades={["Wi-Fi", "Café"]}
-                      />
-                    </div>
+                    <CardHotel 
+                      nome={h.nome}
+                      estrelas={Math.floor(h.avaliacao || 4)}
+                      categoria="Hospedagem"
+                      noites={5}
+                      precoTotal={`R$ ${parseInt(h.preco_noite?.replace(/\D/g, '') || '0') * 5}`}
+                      localizacao={dadosColetados.destino}
+                      precoNoite={h.preco_noite}
+                      checkIn="14:00" checkOut="12:00"
+                      comodidades={["Wi-Fi", "Café"]}
+                    />
                   </div>
                 );
               }
 
-              // Botões de sugestão (Texto)
+              // Botões de sugestão simples
               return (
                 <div 
                   key={opcao}
                   onClick={() => enviarMensagem(opcao)}
-                  className="cursor-pointer flex items-center justify-center min-h-[44px] px-6 rounded-full border-2 border-[#F2D6D6] bg-[#FCF3F3] text-[#A63C3C] text-sm font-bold hover:bg-[#F8E8E8] shadow-sm transition-all active:scale-90 shrink-0 whitespace-nowrap"
+                  className="cursor-pointer flex items-center justify-center px-5 py-2.5 rounded-full border border-[#F2D6D6] bg-[#FCF3F3] text-[#A63C3C] text-sm font-bold hover:bg-[#F8E8E8] shadow-sm transition-transform active:scale-95 shrink-0 whitespace-nowrap"
                 >
                   {opcao}
                 </div>

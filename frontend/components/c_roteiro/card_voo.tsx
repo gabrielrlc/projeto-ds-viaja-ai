@@ -13,7 +13,7 @@ export interface CardVooProps {
 
 export function CardVoo({ tipo, data, preco, co2, partida, duracao, detalhes, chegada }: CardVooProps) {
   return (
-    <div className="bg-white/90 rounded-2xl border border-white/60 shadow-sm p-6 w-full">
+    <div className="bg-white rounded-2xl border border-[#EACFC4] shadow-md p-6 w-full hover:shadow-lg transition-shadow">
       {/* Header do Card */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex gap-4">
