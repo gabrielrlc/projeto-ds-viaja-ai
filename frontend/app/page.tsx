@@ -18,7 +18,6 @@ export default function Home() {
             Entrar
           </Link>
           
-          {/* O Link deve envolver o Button */}
           <Link href="/login?aba=registro">
             <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-full px-6">
               Criar conta
