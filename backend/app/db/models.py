@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, func
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
 from app.db.database import Base
 
@@ -15,7 +16,7 @@ class Itinerary(Base):
     __tablename__ = "itineraries"
     id = Column(Integer, primary_key=True, index=True)
     destination = Column(String, nullable=False)
-    content = Column(Text)  # Aqui fica o texto ou JSON gerado pela IA
+    content = Column(JSONB)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     user_id = Column(Integer, ForeignKey("users.id"))

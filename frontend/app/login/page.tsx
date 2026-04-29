@@ -1,155 +1,184 @@
 "use client";
 
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect, Suspense } from "react";
 
-// estados da pagina
+// ── Tipos ──────────────────────────────────────────────────────────────────
+
 type Visao = "login" | "registro" | "recuperar";
 
-export default function AuthPage() {
-  const [visao, setVisao] = useState<Visao>("login");
+// ── Textos por visão ───────────────────────────────────────────────────────
 
-    return (
-        <Suspense fallback={<div>Carregando...</div>}>
-        <AuthContent visao={visao} setVisao={setVisao} />
-        </Suspense>
-    );
-    }
+const TEXTOS: Record<
+  Visao,
+  { titulo: string; subtitulo: string; botao: string }
+> = {
+  login: {
+    titulo: "Bem-vindo de volta!",
+    subtitulo: "Insira seus dados para continuar planejando.",
+    botao: "Entrar",
+  },
+  registro: {
+    titulo: "Crie sua conta",
+    subtitulo: "Junte-se a nós agora mesmo.",
+    botao: "Criar Conta",
+  },
+  recuperar: {
+    titulo: "Recuperar senha",
+    subtitulo: "Digite seu e-mail para receber um link de redefinição.",
+    botao: "Enviar link de recuperação",
+  },
+};
 
+// ── Subcomponente de campo ─────────────────────────────────────────────────
 
-function AuthContent({ visao, setVisao }: { visao: Visao, setVisao: (v: Visao) => void }) {
+function Campo({
+  label,
+  type,
+  placeholder,
+  value,
+  onChange,
+  children,
+}: {
+  label: string;
+  type: string;
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between">
+        <label className="text-sm font-medium text-primary">{label}</label>
+        {children}
+      </div>
+      <input
+        type={type}
+        required
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="h-12 rounded-xl border border-input bg-transparent px-4 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
+      />
+    </div>
+  );
+}
+
+// ── Conteúdo da página (precisa de Suspense por causa do useSearchParams) ──
+
+function AuthContent({
+  visao,
+  setVisao,
+}: {
+  visao: Visao;
+  setVisao: (v: Visao) => void;
+}) {
   const searchParams = useSearchParams();
-  const abaInicial = searchParams.get("aba");
 
-  useEffect(() => {
-    if (abaInicial === "registro") {
-      setVisao("registro");
-    }
-  }, [abaInicial, setVisao]);
-
-  // estados do formulário
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
-  const envioform = (e: React.FormEvent) => {
+  // lê o parâmetro ?aba= da URL para definir a visão inicial
+  useEffect(() => {
+    if (searchParams.get("aba") === "registro") setVisao("registro");
+  }, [searchParams, setVisao]);
+
+  const { titulo, subtitulo, botao } = TEXTOS[visao];
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (visao === "login") {
-      console.log("Fazendo login com:", { email, senha });
-    } else if (visao === "registro") {
-      console.log("Criando conta para:", { nome, email, senha });
-    } else if (visao === "recuperar") {
-      console.log("Enviando e-mail de recuperação para:", email);
-    }
+    // TODO: integrar com a API de autenticação
+    if (visao === "login") console.log("Login:", { email, senha });
+    if (visao === "registro") console.log("Registro:", { nome, email, senha });
+    if (visao === "recuperar") console.log("Recuperação:", { email });
   };
 
   return (
     <div className="relative flex min-h-screen items-center justify-center p-4">
-      {/* Fundo */}
-        <div className="absolute inset-0 -z-10">
+      {/* fundo */}
+      <div className="absolute inset-0 -z-10">
         <Image
-            src="/fundo-login.jpg" 
-            alt="Paisagem de fundo"
-            fill 
-            priority 
-            className="object-cover"
+          src="/fundo-login.jpg"
+          alt="Paisagem de fundo"
+          fill
+          priority
+          className="object-cover"
         />
-        <div className="absolute inset-0 bg-black/30"></div>
-        </div>
+        <div className="absolute inset-0 bg-black/30" />
+      </div>
 
       {/* card */}
-      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl flex flex-col gap-6 transition-all duration-300">
-        
+      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl flex flex-col gap-6">
         {/* cabeçalho */}
         <div className="flex flex-col items-center gap-1 text-center">
           <Image src="/logo.png" width={170} height={40} alt="Logo Viaja Aí" />
-          <h1 className="text-2xl font-bold text-primary">
-            {visao === "login" && "Bem-vindo de volta!"}
-            {visao === "registro" && "Crie sua conta"}
-            {visao === "recuperar" && "Recuperar senha"}
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            {visao === "login" && "Insira seus dados para continuar planejando."}
-            {visao === "registro" && "Junte-se a nós agora mesmo."}
-            {visao === "recuperar" && "Digite seu e-mail para receber um link de redefinição de senha."}
-          </p>
+          <h1 className="text-2xl font-bold text-primary">{titulo}</h1>
+          <p className="text-sm text-muted-foreground">{subtitulo}</p>
         </div>
 
         {/* formulário */}
-        <form onSubmit={envioform} className="flex flex-col gap-4">
-          
-          {/* campo de nome (registro) */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {visao === "registro" && (
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-primary">Nome completo</label>
-              <input
-                type="text"
-                required
-                placeholder="Como quer ser chamado?"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                className="h-12 rounded-xl border border-input bg-transparent px-4 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
-              />
-            </div>
-          )}
-
-          {/* campo de email (todos) */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-primary">E-mail</label>
-            <input
-              type="email"
-              required
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="h-12 rounded-xl border border-input bg-transparent px-4 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
+            <Campo
+              label="Nome completo"
+              type="text"
+              placeholder="Como quer ser chamado?"
+              value={nome}
+              onChange={setNome}
             />
-          </div>
-
-          {/* campo de senha (login e registro) */}
-          {visao !== "recuperar" && (
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-primary">Senha</label>
-                {/* botão de esqueci a senha */}
-                {visao === "login" && (
-                  <button
-                    type="button"
-                    onClick={() => setVisao("recuperar")}
-                    className="text-xs font-semibold text-primary hover:underline"
-                  >
-                    Esqueceu a senha?
-                  </button>
-                )}
-              </div>
-              <input
-                type="password"
-                required
-                placeholder="••••••••"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                className="h-12 rounded-xl border border-input bg-transparent px-4 text-sm outline-none transition-colors focus:border-primary focus:ring-1 focus:ring-primary"
-              />
-            </div>
           )}
 
-          {/* botão principal */}
-          <Button type="submit" size="lg" className="mt-2 h-12 w-full text-base rounded-xl">
-            {visao === "login" && "Entrar"}
-            {visao === "registro" && "Criar Conta"}
-            {visao === "recuperar" && "Enviar link de recuperação"}
+          <Campo
+            label="E-mail"
+            type="email"
+            placeholder="seu@email.com"
+            value={email}
+            onChange={setEmail}
+          />
+
+          {visao !== "recuperar" && (
+            <Campo
+              label="Senha"
+              type="password"
+              placeholder="••••••••"
+              value={senha}
+              onChange={setSenha}
+            >
+              {visao === "login" && (
+                <button
+                  type="button"
+                  onClick={() => setVisao("recuperar")}
+                  className="text-xs font-semibold text-primary hover:underline"
+                >
+                  Esqueceu a senha?
+                </button>
+              )}
+            </Campo>
+          )}
+
+          <Button
+            type="submit"
+            size="lg"
+            className="mt-2 h-12 w-full text-base rounded-xl"
+          >
+            {botao}
           </Button>
         </form>
 
         {/* rodapé */}
-        <div className="text-center text-sm text-muted-foreground mt-2">
+        <div className="text-center text-sm text-muted-foreground">
           {visao === "login" && (
             <p>
               Ainda não tem uma conta?{" "}
-              <button type="button" onClick={() => setVisao("registro")} className="font-semibold text-primary hover:underline">
+              <button
+                type="button"
+                onClick={() => setVisao("registro")}
+                className="font-semibold text-primary hover:underline"
+              >
                 Crie aqui
               </button>
             </p>
@@ -157,19 +186,44 @@ function AuthContent({ visao, setVisao }: { visao: Visao, setVisao: (v: Visao) =
           {visao === "registro" && (
             <p>
               Já tem uma conta?{" "}
-              <button type="button" onClick={() => setVisao("login")} className="font-semibold text-primary hover:underline">
+              <button
+                type="button"
+                onClick={() => setVisao("login")}
+                className="font-semibold text-primary hover:underline"
+              >
                 Faça login
               </button>
             </p>
           )}
           {visao === "recuperar" && (
-            <button type="button" onClick={() => setVisao("login")} className="font-semibold text-primary hover:underline flex items-center justify-center gap-2 w-full">
-               ← Voltar para o Login
+            <button
+              type="button"
+              onClick={() => setVisao("login")}
+              className="font-semibold text-primary hover:underline flex items-center justify-center gap-2 w-full"
+            >
+              ← Voltar para o Login
             </button>
           )}
         </div>
-
       </div>
     </div>
+  );
+}
+
+// ── Componente principal ───────────────────────────────────────────────────
+
+export default function AuthPage() {
+  const [visao, setVisao] = useState<Visao>("login");
+
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
+      <AuthContent visao={visao} setVisao={setVisao} />
+    </Suspense>
   );
 }

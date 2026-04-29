@@ -10,6 +10,7 @@ Plataforma de roteiros de viagem personalizados gerados por IA, com busca real d
 - [SQLAlchemy](https://sqlalchemy.org/) + [PostgreSQL](https://www.postgresql.org/) — banco de dados
 - [Alembic](https://alembic.sqlalchemy.org/) — migrations
 - [Anthropic Claude Haiku](https://www.anthropic.com/) — geração de roteiros com IA
+- [Gemini 3 Flash Preview](https://ai.google.dev/gemini) — geração de roteiros com IA
 - [SerpAPI](https://serpapi.com/) — busca de voos e hotéis
 - [TripAdvisor Content API](https://tripadvisor.com/developers) — atrações e pontos de interesse
 - [OpenWeatherMap](https://openweathermap.org/api) — previsão do tempo
@@ -28,7 +29,7 @@ projeto-ds-viaja-ai/
 │   │   ├── schemas/
 │   │   │   └── chat.py          # Schemas Pydantic
 │   │   ├── ia/
-│   │   │   └── llm_client.py    # Integração com Claude Haiku
+│   │   │   └── llm_client.py    # Integração com Claude Haiku / Gemini
 │   │   └── services/
 │   │       ├── chat_flow.py     # Lógica do fluxo de chat
 │   │       ├── sessao.py        # Gerenciamento de sessões
@@ -102,6 +103,7 @@ A documentação interativa estará em `http://localhost:8000/docs`.
 | Variável                 | Onde obter                                                       | Obrigatória |
 | ------------------------ | ---------------------------------------------------------------- | ----------- |
 | `ANTHROPIC_API_KEY`      | [console.anthropic.com](https://console.anthropic.com)           | Sim         |
+| `GEMINI_API_KEY`         | [ai.google.dev](https://ai.google.dev)                           | Sim         |
 | `SERPAPI_API_KEY`        | [serpapi.com](https://serpapi.com)                               | Sim         |
 | `TRIPADVISOR_API_KEY`    | [tripadvisor.com/developers](https://tripadvisor.com/developers) | Não\*       |
 | `OPENWEATHERMAP_API_KEY` | [openweathermap.org/api](https://openweathermap.org/api)         | Não\*       |
