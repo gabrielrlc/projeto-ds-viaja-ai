@@ -20,24 +20,24 @@ Plataforma de roteiros de viagem personalizados gerados por IA, com busca real d
 ```
 projeto-ds-viaja-ai/
 ├── backend/
-│   ├── alembic/                 # Migrations do banco de dados
-│   ├── app/
-│   │   ├── main.py              # Endpoints da API
-│   │   ├── db/
-│   │   │   ├── database.py      # Conexão com o banco
-│   │   │   └── models.py        # Models do SQLAlchemy
-│   │   ├── schemas/
-│   │   │   └── chat.py          # Schemas Pydantic
-│   │   ├── ia/
-│   │   │   └── llm_client.py    # Integração com Claude Haiku / Gemini
-│   │   └── services/
-│   │       ├── chat_flow.py     # Lógica do fluxo de chat
-│   │       ├── sessao.py        # Gerenciamento de sessões
-│   │       ├── SerpAPI.py       # Voos e hotéis
-│   │       ├── TripAdvisor.py   # Atrações
-│   │       └── OpenWeather.py   # Previsão do tempo
-│   ├── .env.example
-│   └── requirements.txt
+│   ├── alembic/                 # Migrations do banco de dados
+│   ├── app/
+│   │   ├── main.py              # Endpoints da API
+│   │   ├── db/
+│   │   │   ├── database.py      # Conexão com o banco
+│   │   │   └── models.py        # Models do SQLAlchemy
+│   │   ├── schemas/
+│   │   │   └── chat.py          # Schemas Pydantic
+│   │   ├── ia/
+│   │   │   └── llm_client.py    # Integração com Claude Haiku / Gemini
+│   │   └── services/
+│   │       ├── chat_flow.py     # Lógica do fluxo de chat
+│   │       ├── sessao.py        # Gerenciamento de sessões
+│   │       ├── SerpAPI.py       # Voos e hotéis
+│   │       ├── TripAdvisor.py   # Atrações
+│   │       └── OpenWeather.py   # Previsão do tempo
+│   ├── .env.example
+│   └── requirements.txt
 └── frontend/
 └── ...
 ```
@@ -98,6 +98,32 @@ uvicorn app.main:app --reload
 O servidor estará disponível em `http://localhost:8000`.
 A documentação interativa estará em `http://localhost:8000/docs`.
 
+## Como rodar o frontend (deve ser aberto outro terminal, e manter ambos abertos).
+
+### 1. Pré-requisitos
+
+- Node.js 18+
+
+### 2. Entrar na pasta
+
+```bash
+cd frontend
+```
+
+### 3. Instalar dependências
+
+```bash
+npm install
+```
+
+### 4. Rodar o servidor de desenvolvimento
+
+```bash
+npm run dev
+```
+
+O frontend estará disponível em `http://localhost:3000`.
+
 ## Variáveis de ambiente
 
 | Variável                 | Onde obter                                                       | Obrigatória |
@@ -105,8 +131,8 @@ A documentação interativa estará em `http://localhost:8000/docs`.
 | `ANTHROPIC_API_KEY`      | [console.anthropic.com](https://console.anthropic.com)           | Sim         |
 | `GEMINI_API_KEY`         | [ai.google.dev](https://ai.google.dev)                           | Sim         |
 | `SERPAPI_API_KEY`        | [serpapi.com](https://serpapi.com)                               | Sim         |
-| `TRIPADVISOR_API_KEY`    | [tripadvisor.com/developers](https://tripadvisor.com/developers) | Não\*       |
-| `OPENWEATHERMAP_API_KEY` | [openweathermap.org/api](https://openweathermap.org/api)         | Não\*       |
+| `TRIPADVISOR_API_KEY`    | [tripadvisor.com/developers](https://tripadvisor.com/developers) | Não\* |
+| `OPENWEATHERMAP_API_KEY` | [openweathermap.org/api](https://openweathermap.org/api)         | Não\* |
 | `DATABASE_URL`           | —                                                                | Sim         |
 | `DATABASE_URL_SYNC`      | —                                                                | Sim         |
 
