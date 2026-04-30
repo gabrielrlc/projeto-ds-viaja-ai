@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
@@ -77,6 +77,7 @@ function AuthContent({
   setVisao: (v: Visao) => void;
 }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
@@ -92,7 +93,7 @@ function AuthContent({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: integrar com a API de autenticação
-    if (visao === "login") console.log("Login:", { email, senha });
+    if (visao === "login") router.push("/chat");
     if (visao === "registro") console.log("Registro:", { nome, email, senha });
     if (visao === "recuperar") console.log("Recuperação:", { email });
   };
