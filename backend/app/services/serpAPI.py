@@ -1,48 +1,87 @@
 import httpx
 import os
+import re
 
 SERPAPI_KEY = os.getenv("SERPAPI_API_KEY", "")
 BASE_URL = "https://serpapi.com/search"
+IATA_RE = re.compile(r"^[A-Z]{3}$")
 
 
-async def buscar_voos(origem: str, destino: str, data_ida: str, data_volta: str = None) -> dict:
+async def buscar_voos(origem: str, destino: str, data_ida: str, data_volta: str = None) -> list[dict]:
     """Busca voos via SerpAPI (Google Flights)."""
     if not SERPAPI_KEY:
         return _mock_voos(origem, destino, data_ida, data_volta)
 
-    params = {
-        "engine": "google_flights",
-        "departure_id": origem,
-        "arrival_id": destino,
-        "outbound_date": data_ida,
-        "currency": "BRL",
-        "hl": "pt",
-        "api_key": SERPAPI_KEY,
-    }
-    if data_volta:
-        params["return_date"] = data_volta
-        params["type"] = "1"  # round trip
-    else:
-        params["type"] = "2"  # one way
-
     async with httpx.AsyncClient() as client:
+        origem_id = await _resolver_aeroporto(client, origem)
+        destino_id = await _resolver_aeroporto(client, destino)
+
+        params = {
+            "engine": "google_flights",
+            "departure_id": origem_id,
+            "arrival_id": destino_id,
+            "outbound_date": data_ida,
+            "currency": "BRL",
+            "hl": "pt",
+            "api_key": SERPAPI_KEY,
+        }
+        if data_volta:
+            params["return_date"] = data_volta
+            params["type"] = "1"  # round trip
+        else:
+            params["type"] = "2"  # one way
+
         r = await client.get(BASE_URL, params=params, timeout=15)
         data = r.json()
 
-    best_flights = data.get("best_flights", [])
-    if not best_flights:
+    flights_results = (data.get("best_flights", []) + data.get("other_flights", []))[:5]
+    if not flights_results:
         return _mock_voos(origem, destino, data_ida, data_volta)
 
-    primeiro = best_flights[0]
-    flights = primeiro.get("flights", [{}])
-    return {
-        "companhia": flights[0].get("airline", "N/A"),
-        "preco": primeiro.get("price", 0),
-        "duracao_minutos": primeiro.get("total_duration", 0),
-        "partida": flights[0].get("departure_airport", {}).get("time", ""),
-        "chegada": flights[-1].get("arrival_airport", {}).get("time", ""),
-        "escalas": len(flights) - 1,
-    }
+    voos = []
+    for opcao in flights_results:
+        flights = opcao.get("flights") or [{}]
+        partida = flights[0].get("departure_airport", {})
+        chegada = flights[-1].get("arrival_airport", {})
+        voos.append({
+            "companhia": flights[0].get("airline", "N/A"),
+            "preco": opcao.get("price", 0),
+            "duracao_minutos": opcao.get("total_duration", 0),
+            "partida": partida.get("time", ""),
+            "chegada": chegada.get("time", ""),
+            "aeroporto_partida": partida.get("name", origem_id),
+            "aeroporto_chegada": chegada.get("name", destino_id),
+            "escalas": len(flights) - 1,
+        })
+
+    return voos
+
+
+async def _resolver_aeroporto(client: httpx.AsyncClient, cidade: str) -> str:
+    """Converte cidade em codigo IATA usando o autocomplete do Google Flights."""
+    termo = cidade.strip()
+    if IATA_RE.match(termo.upper()):
+        return termo.upper()
+
+    r = await client.get(
+        BASE_URL,
+        params={
+            "engine": "google_flights_autocomplete",
+            "q": termo,
+            "exclude_regions": "true",
+            "hl": "pt",
+            "api_key": SERPAPI_KEY,
+        },
+        timeout=15,
+    )
+    data = r.json()
+
+    for sugestao in data.get("suggestions", []):
+        aeroportos = sugestao.get("airports") or []
+        if aeroportos:
+            return aeroportos[0].get("id", termo)
+
+    return termo
 
 
 async def buscar_hoteis(destino: str, checkin: str, checkout: str, adultos: int = 2) -> list[dict]:
@@ -83,14 +122,25 @@ async def buscar_hoteis(destino: str, checkin: str, checkout: str, adultos: int 
 
 
 def _mock_voos(origem, destino, data_ida, data_volta):
-    return {
-        "companhia": "LATAM Airlines",
-        "preco": 850,
-        "duracao_minutos": 180,
-        "partida": f"{data_ida} 08:00",
-        "chegada": f"{data_ida} 11:00",
-        "escalas": 0,
-    }
+    return [
+        {
+            "companhia": companhia,
+            "preco": preco,
+            "duracao_minutos": duracao,
+            "partida": f"{data_ida} {partida}",
+            "chegada": f"{data_ida} {chegada}",
+            "aeroporto_partida": origem,
+            "aeroporto_chegada": destino,
+            "escalas": escalas,
+        }
+        for companhia, preco, duracao, partida, chegada, escalas in [
+            ("LATAM Airlines", 850, 180, "08:00", "11:00", 0),
+            ("GOL", 920, 195, "10:30", "13:45", 0),
+            ("Azul", 980, 220, "13:15", "16:55", 1),
+            ("LATAM Airlines", 1040, 210, "16:40", "20:10", 1),
+            ("GOL", 1120, 185, "19:20", "22:25", 0),
+        ]
+    ]
 
 
 def _mock_hoteis(destino):
