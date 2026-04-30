@@ -93,17 +93,19 @@ async def processar_mensagem(sessao: SessaoViagem, mensagem: str) -> RespostaCha
                 sessao.data_volta = None
             else:
                 sessao.data_volta = _extrair_data(msg)
+                if not sessao.data_volta:
+                    return RespostaChat(sessao_id=sessao.sessao_id, etapa_atual="datas", mensagem_bot="Pode repetir a data de volta? (DD/MM/AAAA ou escreva 'sÃ³ ida')")
 
             # Busca voos de IDA
             sessao.etapa = "voo_ida"
-            voos = await buscar_voos(sessao.origem, sessao.destino, sessao.data_ida, sessao.data_volta)
-            sessao.voos_disponiveis = [voos] if isinstance(voos, dict) and voos else []
+            voos = await buscar_voos(sessao.origem, sessao.destino, sessao.data_ida)
+            sessao.voos_disponiveis = voos if isinstance(voos, list) else []
 
             if not sessao.voos_disponiveis:
                 sessao.etapa = "hoteis"
                 return await _etapa_hoteis(sessao)
 
-            opcoes_voo = [f"{v['companhia']} — R$ {v['preco']}" for v in sessao.voos_disponiveis]
+            opcoes_voo = [_formatar_opcao_voo(v) for v in sessao.voos_disponiveis]
             return RespostaChat(
                 sessao_id=sessao.sessao_id,
                 etapa_atual="voo_ida",
@@ -118,7 +120,13 @@ async def processar_mensagem(sessao: SessaoViagem, mensagem: str) -> RespostaCha
         try:
             # Tenta encontrar qual voo o usuário escolheu pelo texto ou índice
             # Aqui fazemos uma busca simples: se o texto da mensagem contém o nome da companhia e preço
-            escolhido = next((v for v in sessao.voos_disponiveis if v['companhia'] in msg), sessao.voos_disponiveis[0])
+            escolhido = next(
+                (
+                    v for v in sessao.voos_disponiveis
+                    if _formatar_opcao_voo(v) == msg or v['companhia'] in msg
+                ),
+                sessao.voos_disponiveis[0],
+            )
             sessao.voo_ida_escolhido = escolhido # Agora salva o DICIONÁRIO completo
         except:
             sessao.voo_ida_escolhido = sessao.voos_disponiveis[0] if sessao.voos_disponiveis else {}
@@ -127,19 +135,33 @@ async def processar_mensagem(sessao: SessaoViagem, mensagem: str) -> RespostaCha
             sessao.etapa = "hoteis"
             return await _etapa_hoteis(sessao)
         
+        voos_volta = await buscar_voos(sessao.destino, sessao.origem, sessao.data_volta)
+        sessao.voos_disponiveis = voos_volta if isinstance(voos_volta, list) else []
+
+        if not sessao.voos_disponiveis:
+            sessao.etapa = "hoteis"
+            return await _etapa_hoteis(sessao)
+
+        opcoes_voo = [_formatar_opcao_voo(v) for v in sessao.voos_disponiveis]
         sessao.etapa = "voo_volta"
         return RespostaChat(
             sessao_id=sessao.sessao_id,
             etapa_atual="voo_volta",
             mensagem_bot="Ótimo! Agora escolha o voo de VOLTA:",
-            opcoes=["LATAM — R$ 420", "GOL — R$ 480"], 
+            opcoes=opcoes_voo, 
             dados_extra={"voos": sessao.voos_disponiveis} 
         )
 
     # ── ETAPA 5.5: Escolha de VOLTA ─────────────────────────────────────────
     if etapa == "voo_volta":
         try:
-            escolhido = sessao.voos_disponiveis[0] 
+            escolhido = next(
+                (
+                    v for v in sessao.voos_disponiveis
+                    if _formatar_opcao_voo(v) == msg or v['companhia'] in msg
+                ),
+                sessao.voos_disponiveis[0],
+            )
             sessao.voo_volta_escolhido = escolhido
         except:
             sessao.voo_volta_escolhido = {}
@@ -270,3 +292,7 @@ async def _etapa_hoteis(sessao: SessaoViagem) -> RespostaChat:
         opcoes=opcoes_hotel,
         dados_extra={"hoteis": sessao.hoteis_disponiveis},
     )
+
+
+def _formatar_opcao_voo(voo: dict) -> str:
+    return f"{voo['companhia']} — R$ {voo['preco']}"
