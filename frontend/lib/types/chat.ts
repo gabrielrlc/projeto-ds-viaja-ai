@@ -17,12 +17,24 @@ export interface VooOpcao {
   aeroporto_chegada?: string;
   duracao_minutos?: number;
   companhia?: string;
+  tipo_passagem?: string;
+  aeronave?: string;
+  numero_voo?: string;
+  logo_companhia?: string;
 }
 
 export interface HotelOpcao {
   nome?: string;
   avaliacao?: number;
   preco_noite?: string;
+  imagem_url?: string;
+  thumbnail?: string;
+  foto_url?: string;
+  image?: string;
+  link_hotel?: string;
+  link?: string;
+  serpapi_property_details_link?: string;
+  serpapi_google_hotels_link?: string;
 }
 
 export interface DadosColetados {

@@ -12,6 +12,28 @@ function getDataVoo(dados: DadosColetados, isIda: boolean) {
   return formatarDataExtenso(isIda ? dataIda || "" : dataVolta || dataIda || "");
 }
 
+function traduzirTipoPassagem(tipo?: string) {
+  const tipos: Record<string, string> = {
+    Economy: "Econômica",
+    "Premium economy": "Econômica premium",
+    Business: "Executiva",
+    First: "Primeira classe",
+  };
+
+  return tipo ? tipos[tipo] || tipo : "";
+}
+
+function montarDetalhesVoo(voo: VooOpcao) {
+  return [
+    voo.companhia,
+    traduzirTipoPassagem(voo.tipo_passagem),
+    voo.aeronave,
+    voo.numero_voo ? `Voo ${voo.numero_voo}` : "",
+  ]
+    .filter(Boolean)
+    .join(" • ");
+}
+
 export function montarPropsVoo(
   voo: VooOpcao,
   dados: DadosColetados,
@@ -35,7 +57,8 @@ export function montarPropsVoo(
       cidade: isIda ? dados.destino : dados.origem,
     },
     duracao: formatarDuracao(voo.duracao_minutos || 0),
-    detalhes: voo.companhia || "",
+    detalhes: montarDetalhesVoo(voo),
+    logoCompanhia: voo.logo_companhia,
   };
 }
 
@@ -56,5 +79,7 @@ export function montarPropsHotel(
     checkIn: "14:00",
     checkOut: "12:00",
     comodidades,
+    imagemUrl: hotel.imagem_url || hotel.thumbnail || hotel.foto_url || hotel.image,
+    linkHotel: hotel.link_hotel || hotel.link || hotel.serpapi_property_details_link || hotel.serpapi_google_hotels_link,
   };
 }
