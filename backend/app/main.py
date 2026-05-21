@@ -70,6 +70,7 @@ async def enviar_mensagem(body: MensagemChat, db: AsyncSession = Depends(get_db)
             await db.flush()  # gera o ID do itinerário antes do commit
             chat_session.itinerary_id = itinerary.id
             chat_session.etapa_atual = resposta.etapa_atual
+            resposta.itinerary_id = itinerary.id
 
         await db.commit()
 

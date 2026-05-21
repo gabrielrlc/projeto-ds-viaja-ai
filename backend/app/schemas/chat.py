@@ -14,6 +14,7 @@ class RespostaChat(BaseModel):
     opcoes: Optional[list[str]] = None      
     dados_extra: Optional[dict] = None     
     roteiro: Optional[dict] = None          
+    itinerary_id: Optional[int] = None
     
 # --- Estado da sessão em memória ---
 class SessaoViagem(BaseModel):
