@@ -68,6 +68,14 @@ export interface RespostaChatApi {
   opcoes?: string[] | null;
   dados_extra?: OpcoesObjetos | null;
   roteiro?: RoteiroIa | null;
+  itinerary_id?: number | null;
+}
+
+export interface RespostaModificacaoApi {
+  id: number;
+  destination: string;
+  roteiro: RoteiroIa;
+  mensagem: string;
 }
 
 export type PropsVooMontadas = CardVooProps;

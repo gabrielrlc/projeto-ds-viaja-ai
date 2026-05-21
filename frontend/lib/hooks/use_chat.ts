@@ -1,7 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { enviarMensagemChat, iniciarChat } from "@/lib/api/chat";
+import {
+  enviarMensagemChat,
+  iniciarChat,
+  modificarRoteiro,
+} from "@/lib/api/chat";
 import type {
   DadosColetados,
   Mensagem,
@@ -21,8 +25,12 @@ const DADOS_INICIAIS: DadosColetados = {
   hotel_escolhido: null,
 };
 
+const MENSAGEM_PODE_MODIFICAR =
+  "Seu roteiro está pronto. Deseja realizar alguma mudança? Você pode pedir, por exemplo: trocar o hotel, ajustar o orçamento ou mudar atividades de algum dia.";
+
 export function useChat() {
   const [sessaoId, setSessaoId] = useState<string | null>(null);
+  const [itineraryId, setItineraryId] = useState<number | null>(null);
   const [mensagens, setMensagens] = useState<Mensagem[]>([]);
   const [opcoes, setOpcoes] = useState<string[]>([]);
   const [input, setInput] = useState("");
@@ -110,26 +118,91 @@ export function useChat() {
 
   const enviarMensagem = useCallback(
     async (texto: string) => {
-      if (!texto.trim() || !sessaoId || carregando || roteiroIa) return;
+      const mensagemUsuario = texto.trim();
+      if (!mensagemUsuario || carregando) return;
 
-      atualizarDadosColetados(texto, etapaAtual, opcoes, opcoesObjetos);
+      if (roteiroIa) {
+        setMensagens((prev) => [
+          ...prev,
+          { remetente: "user", texto: mensagemUsuario },
+        ]);
+        setInput("");
+        setOpcoes([]);
 
-      setMensagens((prev) => [...prev, { remetente: "user", texto }]);
+        if (!itineraryId) {
+          setMensagens((prev) => [
+            ...prev,
+            {
+              remetente: "bot",
+              texto:
+                "Não consegui identificar qual roteiro deve ser modificado. Gere um novo roteiro e tente novamente.",
+            },
+          ]);
+          return;
+        }
+
+        setCarregando(true);
+
+        try {
+          const data = await modificarRoteiro(itineraryId, mensagemUsuario);
+
+          setRoteiroIa(data.roteiro);
+          setMensagens((prev) => [
+            ...prev,
+            { remetente: "bot", texto: data.mensagem },
+          ]);
+        } catch (err) {
+          console.error("Erro ao modificar roteiro:", err);
+          setMensagens((prev) => [
+            ...prev,
+            {
+              remetente: "bot",
+              texto:
+                "Ocorreu um erro ao modificar seu roteiro. Tente novamente.",
+            },
+          ]);
+        } finally {
+          setCarregando(false);
+        }
+
+        return;
+      }
+
+      if (!sessaoId) return;
+
+      atualizarDadosColetados(mensagemUsuario, etapaAtual, opcoes, opcoesObjetos);
+
+      setMensagens((prev) => [
+        ...prev,
+        { remetente: "user", texto: mensagemUsuario },
+      ]);
       setInput("");
       setOpcoes([]);
       setCarregando(true);
 
       try {
-        const data = await enviarMensagemChat(sessaoId, texto);
+        const data = await enviarMensagemChat(sessaoId, mensagemUsuario);
 
         setEtapaAtual(data.etapa_atual);
-        setMensagens((prev) => [
-          ...prev,
-          { remetente: "bot", texto: data.mensagem_bot },
-        ]);
+        setMensagens((prev) => {
+          const novasMensagens: Mensagem[] = [
+            ...prev,
+            { remetente: "bot", texto: data.mensagem_bot },
+          ];
+
+          if (data.roteiro) {
+            novasMensagens.push({
+              remetente: "bot",
+              texto: MENSAGEM_PODE_MODIFICAR,
+            });
+          }
+
+          return novasMensagens;
+        });
 
         if (data.opcoes?.length) setOpcoes(data.opcoes);
         if (data.dados_extra) setOpcoesObjetos(data.dados_extra);
+        if (data.itinerary_id) setItineraryId(data.itinerary_id);
         if (data.roteiro) setRoteiroIa(data.roteiro);
       } catch (err) {
         console.error("Erro ao enviar mensagem:", err);
@@ -147,6 +220,7 @@ export function useChat() {
     },
     [
       sessaoId,
+      itineraryId,
       carregando,
       roteiroIa,
       etapaAtual,

@@ -46,10 +46,10 @@ export function ChatInput({
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          disabled={carregando || !!roteiroIa}
+          disabled={carregando}
           placeholder={
             roteiroIa
-              ? "Roteiro finalizado. Inicie um novo chat para planejar outra viagem."
+              ? "Peça uma alteração no roteiro..."
               : "Digite sua resposta..."
           }
           className="flex-1 bg-transparent border-none outline-none text-gray-600 placeholder:text-gray-400 disabled:opacity-50 text-sm"
@@ -57,7 +57,7 @@ export function ChatInput({
 
         <button
           type="submit"
-          disabled={carregando || !!roteiroIa || !input.trim()}
+          disabled={carregando || !input.trim()}
           className="w-12 h-12 bg-[#D68585] rounded-xl flex items-center justify-center text-white hover:bg-[#C57474] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           aria-label="Enviar mensagem"
         >

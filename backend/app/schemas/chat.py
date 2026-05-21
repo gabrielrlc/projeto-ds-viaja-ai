@@ -14,6 +14,7 @@ class RespostaChat(BaseModel):
     opcoes: Optional[list[str]] = None      
     dados_extra: Optional[dict] = None     
     roteiro: Optional[dict] = None          
+    itinerary_id: Optional[int] = None
     
 # --- Estado da sessão em memória ---
 class SessaoViagem(BaseModel):
@@ -37,8 +38,19 @@ class SessaoViagem(BaseModel):
 class ItineraryOut(BaseModel):
     id: int
     destination: str
-    content: Optional[str]
+    content: Optional[dict]
     created_at: datetime
 
     class Config:
         from_attributes = True  # permite converter model do banco direto pro schema
+
+
+# --- Modificação de roteiro ---
+class ModificarRoteiro(BaseModel):
+    instrucao: str  # ex: "Remova o dia 3 e adicione mais restaurantes locais"
+
+class RespostaModificacao(BaseModel):
+    id: int
+    destination: str
+    roteiro: dict
+    mensagem: str

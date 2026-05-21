@@ -1,4 +1,7 @@
-import type { RespostaChatApi } from "@/lib/types/chat";
+import type {
+  RespostaChatApi,
+  RespostaModificacaoApi,
+} from "@/lib/types/chat";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -19,6 +22,20 @@ export async function enviarMensagemChat(
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sessao_id: sessaoId, mensagem }),
+  });
+
+  if (!res.ok) throw new Error(`Erro ${res.status}`);
+  return res.json();
+}
+
+export async function modificarRoteiro(
+  viagemId: number,
+  instrucao: string,
+): Promise<RespostaModificacaoApi> {
+  const res = await fetch(`${API_URL}/api/viagens/${viagemId}/modificar`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ instrucao }),
   });
 
   if (!res.ok) throw new Error(`Erro ${res.status}`);
