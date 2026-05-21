@@ -79,5 +79,7 @@ export function montarPropsHotel(
     checkIn: "14:00",
     checkOut: "12:00",
     comodidades,
+    imagemUrl: hotel.imagem_url || hotel.thumbnail || hotel.foto_url || hotel.image,
+    linkHotel: hotel.link_hotel || hotel.link || hotel.serpapi_property_details_link || hotel.serpapi_google_hotels_link,
   };
 }

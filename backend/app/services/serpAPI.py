@@ -115,15 +115,78 @@ async def buscar_hoteis(destino: str, checkin: str, checkout: str, adultos: int 
     if not propriedades:
         return _mock_hoteis(destino)
 
-    return [
-        {
-            "nome": h.get("name", "Hotel"),
-            "preco_noite": h.get("rate_per_night", {}).get("lowest", "N/A"),
-            "avaliacao": h.get("overall_rating", "N/A"),
-            "descricao": h.get("description", ""),
-        }
-        for h in propriedades
-    ]
+    hoteis = []
+    async with httpx.AsyncClient() as client:
+        for h in propriedades:
+            detalhes = await _buscar_detalhes_hotel(client, h, checkin, checkout, adultos)
+            hoteis.append({
+                "nome": h.get("name", "Hotel"),
+                "preco_noite": h.get("rate_per_night", {}).get("lowest", "N/A"),
+                "avaliacao": h.get("overall_rating", "N/A"),
+                "descricao": h.get("description", ""),
+                "imagem_url": _extrair_imagem_hotel(h) or _extrair_imagem_hotel(detalhes),
+                "link_hotel": _extrair_link_reserva_hotel(detalhes) or _extrair_link_reserva_hotel(h) or h.get("link") or h.get("serpapi_property_details_link") or h.get("serpapi_google_hotels_link", ""),
+            })
+
+    return hoteis
+
+
+async def _buscar_detalhes_hotel(client: httpx.AsyncClient, hotel: dict, checkin: str, checkout: str, adultos: int) -> dict:
+    property_token = hotel.get("property_token")
+    if not property_token:
+        return {}
+
+    try:
+        r = await client.get(
+            BASE_URL,
+            params={
+                "engine": "google_hotels",
+                "property_token": property_token,
+                "check_in_date": checkin,
+                "check_out_date": checkout,
+                "adults": adultos,
+                "currency": "BRL",
+                "hl": "pt",
+                "api_key": SERPAPI_KEY,
+            },
+            timeout=15,
+        )
+        return r.json()
+    except Exception:
+        return {}
+
+
+def _extrair_link_reserva_hotel(hotel: dict) -> str:
+    for preco in hotel.get("prices") or []:
+        if isinstance(preco, dict) and preco.get("link"):
+            return preco["link"]
+
+    for quarto in hotel.get("rooms") or []:
+        if not isinstance(quarto, dict):
+            continue
+        if quarto.get("link"):
+            return quarto["link"]
+        for tarifa in quarto.get("rates") or []:
+            if isinstance(tarifa, dict) and tarifa.get("link"):
+                return tarifa["link"]
+
+    return ""
+
+
+def _extrair_imagem_hotel(hotel: dict) -> str:
+    if hotel.get("thumbnail"):
+        return hotel["thumbnail"]
+
+    imagens = hotel.get("images") or hotel.get("photos") or []
+    if isinstance(imagens, list):
+        for imagem in imagens:
+            if not isinstance(imagem, dict):
+                continue
+            url = imagem.get("original_image") or imagem.get("thumbnail")
+            if url:
+                return url
+
+    return ""
 
 
 def _mock_voos(origem, destino, data_ida, data_volta):
@@ -154,7 +217,28 @@ def _mock_voos(origem, destino, data_ida, data_volta):
 
 def _mock_hoteis(destino):
     return [
-        {"nome": f"Hotel Central {destino}", "preco_noite": "R$ 280", "avaliacao": 4.2, "descricao": "Hotel bem localizado no centro."},
-        {"nome": f"Pousada Boa Viagem", "preco_noite": "R$ 150", "avaliacao": 4.5, "descricao": "Charmosa pousada familiar."},
-        {"nome": f"Apart Hotel {destino}", "preco_noite": "R$ 320", "avaliacao": 4.0, "descricao": "Apartamentos completos com cozinha."},
+        {
+            "nome": f"Hotel Central {destino}",
+            "preco_noite": "R$ 280",
+            "avaliacao": 4.2,
+            "descricao": "Hotel bem localizado no centro.",
+            "imagem_url": "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
+            "link_hotel": "https://www.google.com/travel/hotels",
+        },
+        {
+            "nome": f"Pousada Boa Viagem",
+            "preco_noite": "R$ 150",
+            "avaliacao": 4.5,
+            "descricao": "Charmosa pousada familiar.",
+            "imagem_url": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
+            "link_hotel": "https://www.google.com/travel/hotels",
+        },
+        {
+            "nome": f"Apart Hotel {destino}",
+            "preco_noite": "R$ 320",
+            "avaliacao": 4.0,
+            "descricao": "Apartamentos completos com cozinha.",
+            "imagem_url": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=80",
+            "link_hotel": "https://www.google.com/travel/hotels",
+        },
     ]
