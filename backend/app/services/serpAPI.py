@@ -1,6 +1,7 @@
 import httpx
 import os
 import re
+from urllib.parse import quote_plus
 
 SERPAPI_KEY = os.getenv("SERPAPI_API_KEY", "")
 BASE_URL = "https://serpapi.com/search"
@@ -57,6 +58,7 @@ async def buscar_voos(origem: str, destino: str, data_ida: str, data_volta: str 
             "aeroporto_partida": partida.get("name", origem_id),
             "aeroporto_chegada": chegada.get("name", destino_id),
             "escalas": len(flights) - 1,
+            "link_passagem": opcao.get("link") or opcao.get("serpapi_google_flights_link") or _montar_link_google_flights(origem_id, destino_id, data_ida),
         })
 
     return voos
@@ -189,6 +191,11 @@ def _extrair_imagem_hotel(hotel: dict) -> str:
     return ""
 
 
+def _montar_link_google_flights(origem: str, destino: str, data_ida: str) -> str:
+    query = quote_plus(f"Flights from {origem} to {destino} on {data_ida}")
+    return f"https://www.google.com/travel/flights?q={query}"
+
+
 def _mock_voos(origem, destino, data_ida, data_volta):
     return [
         {
@@ -204,6 +211,7 @@ def _mock_voos(origem, destino, data_ida, data_volta):
             "aeronave": aeronave,
             "numero_voo": numero_voo,
             "logo_companhia": logo_companhia,
+            "link_passagem": _montar_link_google_flights(origem, destino, data_ida),
         }
         for companhia, preco, duracao, partida, chegada, escalas, aeronave, numero_voo, logo_companhia in [
             ("LATAM Airlines", 850, 180, "08:00", "11:00", 0, "Airbus A320", "LA 3377", "https://www.gstatic.com/flights/airline_logos/70px/LA.png"),

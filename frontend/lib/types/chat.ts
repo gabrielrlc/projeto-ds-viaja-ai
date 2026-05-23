@@ -21,6 +21,9 @@ export interface VooOpcao {
   aeronave?: string;
   numero_voo?: string;
   logo_companhia?: string;
+  link_passagem?: string;
+  link?: string;
+  serpapi_google_flights_link?: string;
 }
 
 export interface HotelOpcao {

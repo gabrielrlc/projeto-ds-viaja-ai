@@ -28,6 +28,7 @@ describe("montarPropsVoo", () => {
       tipo_passagem: "Economy",
       aeronave: "A320",
       numero_voo: "123",
+      link_passagem: "https://www.google.com/travel/flights",
     };
 
     const resultado = montarPropsVoo(voo, dadosBase, "Ida");
@@ -38,6 +39,7 @@ describe("montarPropsVoo", () => {
     expect(resultado.partida.cidade).toBe("Recife");
     expect(resultado.chegada.cidade).toBe("Paris");
     expect(resultado.duracao).toBe("7h 30min");
+    expect(resultado.linkPassagem).toBe("https://www.google.com/travel/flights");
     expect(resultado.detalhes).toContain("Econômica");
   });
 });
