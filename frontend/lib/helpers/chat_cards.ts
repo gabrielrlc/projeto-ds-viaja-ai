@@ -59,6 +59,7 @@ export function montarPropsVoo(
     duracao: formatarDuracao(voo.duracao_minutos || 0),
     detalhes: montarDetalhesVoo(voo),
     logoCompanhia: voo.logo_companhia,
+    linkPassagem: voo.link_passagem || voo.link || voo.serpapi_google_flights_link,
   };
 }
 

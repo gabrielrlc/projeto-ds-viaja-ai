@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Plane, Wifi, BatteryCharging, Tv } from "lucide-react";
+import { BatteryCharging, ExternalLink, Plane, Tv, Wifi } from "lucide-react";
 
 export interface CardVooProps {
   tipo: "Ida" | "Volta";
@@ -11,9 +11,21 @@ export interface CardVooProps {
   duracao: string;
   detalhes: string;
   logoCompanhia?: string;
+  linkPassagem?: string;
 }
 
-export function CardVoo({ tipo, data, preco, co2, partida, duracao, detalhes, chegada, logoCompanhia }: CardVooProps) {
+export function CardVoo({
+  tipo,
+  data,
+  preco,
+  co2,
+  partida,
+  duracao,
+  detalhes,
+  chegada,
+  logoCompanhia,
+  linkPassagem,
+}: CardVooProps) {
   return (
     <div className="bg-white rounded-2xl border border-[#EACFC4] shadow-md p-6 w-full hover:shadow-lg transition-shadow">
       {/* Header do Card */}
@@ -81,6 +93,18 @@ export function CardVoo({ tipo, data, preco, co2, partida, duracao, detalhes, ch
           <div className="flex items-center gap-2"><Wifi size={14} /> Wi-Fi cobrado à parte</div>
           <div className="flex items-center gap-2"><BatteryCharging size={14} /> Saída USB</div>
           <div className="flex items-center gap-2"><Tv size={14} /> Streaming no dispositivo</div>
+          {linkPassagem && (
+            <a
+              href={linkPassagem}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(event) => event.stopPropagation()}
+              className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-[#A63C3C] hover:underline"
+            >
+              Mais informações
+              <ExternalLink size={13} />
+            </a>
+          )}
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ async def test_buscar_voos_sem_api_key_retorna_cinco_opcoes():
 async def test_buscar_voos_sem_api_key_estrutura_completa():
     with patch("app.services.serpAPI.SERPAPI_KEY", ""):
         voos = await buscar_voos("São Paulo", "Paris", "2025-07-15")
-    for campo in ["companhia", "preco", "duracao_minutos", "partida", "chegada", "escalas"]:
+    for campo in ["companhia", "preco", "duracao_minutos", "partida", "chegada", "escalas", "link_passagem"]:
         assert campo in voos[0], f"campo '{campo}' ausente"
 
 async def test_buscar_voos_sem_api_key_tem_voo_direto():
@@ -84,6 +84,7 @@ async def test_buscar_voos_com_api_key_parseia_resultado():
     assert voos[0]["companhia"] == "LATAM"
     assert voos[0]["preco"] == 3500
     assert voos[0]["duracao_minutos"] == 720
+    assert voos[0]["link_passagem"]
 
 async def test_buscar_voos_sem_resultados_da_api_retorna_mock():
     autocomplete = MagicMock()
