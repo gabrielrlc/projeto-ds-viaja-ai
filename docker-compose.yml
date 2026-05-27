@@ -1,0 +1,27 @@
+services:
+  api:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+    environment:
+
+      - DATABASE_URL=postgresql+asyncpg://admin:adminpassword@db:5432/viajaai_db
+      - GEMINI_API_KEY=cole_sua_chave_do_google_aqui
+
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: adminpassword
+      POSTGRES_DB: viajaai_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
