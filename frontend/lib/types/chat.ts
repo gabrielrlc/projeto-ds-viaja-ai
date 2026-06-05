@@ -17,12 +17,27 @@ export interface VooOpcao {
   aeroporto_chegada?: string;
   duracao_minutos?: number;
   companhia?: string;
+  tipo_passagem?: string;
+  aeronave?: string;
+  numero_voo?: string;
+  logo_companhia?: string;
+  link_passagem?: string;
+  link?: string;
+  serpapi_google_flights_link?: string;
 }
 
 export interface HotelOpcao {
   nome?: string;
   avaliacao?: number;
   preco_noite?: string;
+  imagem_url?: string;
+  thumbnail?: string;
+  foto_url?: string;
+  image?: string;
+  link_hotel?: string;
+  link?: string;
+  serpapi_property_details_link?: string;
+  serpapi_google_hotels_link?: string;
 }
 
 export interface DadosColetados {
@@ -68,6 +83,14 @@ export interface RespostaChatApi {
   opcoes?: string[] | null;
   dados_extra?: OpcoesObjetos | null;
   roteiro?: RoteiroIa | null;
+  itinerary_id?: number | null;
+}
+
+export interface RespostaModificacaoApi {
+  id: number;
+  destination: string;
+  roteiro: RoteiroIa;
+  mensagem: string;
 }
 
 export type PropsVooMontadas = CardVooProps;
