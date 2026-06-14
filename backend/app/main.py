@@ -6,8 +6,10 @@ from sqlalchemy import select
 from app.db.database import get_db
 from app.db.models import Itinerary, ChatSession, ChatMessage
 from app.schemas.chat import MensagemChat, RespostaChat, ItineraryOut, ModificarRoteiro, RespostaModificacao
+from app.schemas.explorar import RespostaDestinos, RespostaAtracoes
 from app.services.sessao import criar_sessao, obter_sessao, salvar_sessao, deletar_sessao
 from app.services.chat_flow import processar_mensagem
+from app.services.explorar import listar_destinos, buscar_atracoes_por_cidade
 from app.ia.llm_client import modificar_roteiro
 
 app = FastAPI(title="ViajaAI API", version="2.0.0")
@@ -20,16 +22,23 @@ app.add_middleware(
 )
 
 
+# ---------------------------------------------------------------------------
+# Status
+# ---------------------------------------------------------------------------
+
 @app.get("/api/status")
 def check_status():
     return {"status": "online", "mensagem": "Servidor do ViajaAI rodando com sucesso!", "versao": "2.0.0"}
 
 
+# ---------------------------------------------------------------------------
+# Chat
+# ---------------------------------------------------------------------------
+
 @app.post("/api/chat/iniciar")
 async def iniciar_chat(db: AsyncSession = Depends(get_db)):
     sessao = criar_sessao()
 
-    # salva a sessao no banco
     chat_session = ChatSession(sessao_id=sessao.sessao_id, etapa_atual="destino")
     db.add(chat_session)
     await db.commit()
@@ -45,11 +54,10 @@ async def iniciar_chat(db: AsyncSession = Depends(get_db)):
 
 @app.post("/api/chat/mensagem", response_model=RespostaChat)
 async def enviar_mensagem(body: MensagemChat, db: AsyncSession = Depends(get_db)):
-    await sessao = obter_sessao(body.sessao_id)
+    sessao = await obter_sessao(body.sessao_id)
     if not sessao:
         raise HTTPException(status_code=404, detail="Sessão não encontrada. Inicie um novo chat.")
 
-    # busca a sessao no banco
     result = await db.execute(
         select(ChatSession).where(ChatSession.sessao_id == body.sessao_id)
     )
@@ -58,16 +66,14 @@ async def enviar_mensagem(body: MensagemChat, db: AsyncSession = Depends(get_db)
     resposta = await processar_mensagem(sessao, body.mensagem)
     await salvar_sessao(sessao)
 
-    # salva as mensagens no banco
     if chat_session:
         db.add(ChatMessage(role="user", content=body.mensagem, session_id=chat_session.id))
         db.add(ChatMessage(role="assistant", content=resposta.mensagem_bot, session_id=chat_session.id))
 
-        # quando o roteiro ficar pronto, salva o itinerário
         if resposta.roteiro:
             itinerary = Itinerary(destination=sessao.destino, content=resposta.roteiro)
             db.add(itinerary)
-            await db.flush()  # gera o ID do itinerário antes do commit
+            await db.flush()
             chat_session.itinerary_id = itinerary.id
             chat_session.etapa_atual = resposta.etapa_atual
             resposta.itinerary_id = itinerary.id
@@ -79,7 +85,7 @@ async def enviar_mensagem(body: MensagemChat, db: AsyncSession = Depends(get_db)
 
 @app.delete("/api/chat/{sessao_id}")
 async def encerrar_chat(sessao_id: str, db: AsyncSession = Depends(get_db)):
-    deletar_sessao(sessao_id)
+    await deletar_sessao(sessao_id)
     result = await db.execute(select(ChatSession).where(ChatSession.sessao_id == sessao_id))
     chat_session = result.scalar_one_or_none()
     if chat_session:
@@ -87,6 +93,10 @@ async def encerrar_chat(sessao_id: str, db: AsyncSession = Depends(get_db)):
         await db.commit()
     return {"mensagem": "Sessão encerrada."}
 
+
+# ---------------------------------------------------------------------------
+# Viagens
+# ---------------------------------------------------------------------------
 
 @app.get("/api/viagens", response_model=list[ItineraryOut])
 async def listar_viagens(db: AsyncSession = Depends(get_db)):
@@ -135,3 +145,32 @@ async def deletar_viagem(viagem_id: int, db: AsyncSession = Depends(get_db)):
     await db.delete(viagem)
     await db.commit()
     return {"mensagem": "Viagem removida do histórico."}
+
+
+# ---------------------------------------------------------------------------
+# Explorar
+# ---------------------------------------------------------------------------
+
+@app.get("/api/explorar/destinos", response_model=RespostaDestinos)
+async def listar_destinos_explorar():
+    """
+    Retorna a lista de cidades disponíveis, categorias de interesse
+    e metadados dos destinos populares para montar os filtros da tela /explorar.
+    """
+    cities, categories, destinos = await listar_destinos()
+    return RespostaDestinos(cities=cities, categories=categories, destinos=destinos)
+
+
+@app.get("/api/explorar/atracoes/{cidade}", response_model=RespostaAtracoes)
+async def listar_atracoes_por_cidade(cidade: str):
+    """
+    Retorna atrações de uma cidade específica.
+    Tenta o TripAdvisor primeiro; usa a lista curada como fallback automático.
+    """
+    atracoes = await buscar_atracoes_por_cidade(cidade)
+    if not atracoes:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Nenhuma atração encontrada para '{cidade}'.",
+        )
+    return RespostaAtracoes(city=cidade, atracoes=atracoes)
