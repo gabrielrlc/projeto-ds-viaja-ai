@@ -34,7 +34,7 @@ async def iniciar_chat(db: AsyncSession = Depends(get_db)):
     db.add(chat_session)
     await db.commit()
 
-    salvar_sessao(sessao)
+    await salvar_sessao(sessao)
 
     return RespostaChat(
         sessao_id=sessao.sessao_id,
@@ -45,7 +45,7 @@ async def iniciar_chat(db: AsyncSession = Depends(get_db)):
 
 @app.post("/api/chat/mensagem", response_model=RespostaChat)
 async def enviar_mensagem(body: MensagemChat, db: AsyncSession = Depends(get_db)):
-    sessao = obter_sessao(body.sessao_id)
+    await sessao = obter_sessao(body.sessao_id)
     if not sessao:
         raise HTTPException(status_code=404, detail="Sessão não encontrada. Inicie um novo chat.")
 
@@ -56,7 +56,7 @@ async def enviar_mensagem(body: MensagemChat, db: AsyncSession = Depends(get_db)
     chat_session = result.scalar_one_or_none()
 
     resposta = await processar_mensagem(sessao, body.mensagem)
-    salvar_sessao(sessao)
+    await salvar_sessao(sessao)
 
     # salva as mensagens no banco
     if chat_session:
