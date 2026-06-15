@@ -59,91 +59,92 @@ DESTINOS_POPULARES: list[DestinoPopular] = [
 _ATRACOES_CURADAS: dict[str, list[Attraction]] = {
     "Rio de Janeiro": [
         Attraction(id="rj-1", city="Rio de Janeiro", category="Cultura e História", name="Cristo Redentor",
-            description="Uma das Sete Maravilhas do Mundo Moderno, oferecendo vista panorâmica da cidade.",
-            imageUrl="https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=800&auto=format&fit=crop",
-            location="Parque Nacional da Tijuca", hours="08:00 - 19:00", price="R$ 97,50"),
-        Attraction(id="rj-2", city="Rio de Janeiro", category="Natureza e Aventura", name="Pão de Açúcar",
+            description="No topo do Morro do Corcovado, a 710 metros de altitude, o Cristo Redentor recebe você de braços abertos, sendo um ícone do Rio de Janeiro e uma das Sete Maravilhas do Mundo Moderno.",
+            imageUrl="https://transcode-v2.app.engoo.com/image/fetch/f_auto,c_lfill,w_300,dpr_3/https://assets.app.engoo.com/organizations/5d2656f1-9162-461d-88c7-b2505623d8cb/images/6XY2BQvQLh8Rtjop9TTPcQ.jpeg",
+            location="Parque Nacional da Tijuca", hours="08:00 - 19:00", price="R$ 97,50", 
+            tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Cristo+Redentor+Rio+de+Janeiro"),
+        Attraction(id="rj-2", city="Rio de Janeiro", category="Natureza e Aventura", name="Bondinho Pão de Açúcar",
             description="Famoso teleférico com vistas incríveis do pôr do sol e da Baía de Guanabara.",
-            imageUrl="https://images.unsplash.com/photo-1518639192441-8fce0a366e2e?w=800&auto=format&fit=crop",
-            location="Urca, Rio de Janeiro", hours="08:30 - 20:00", price="R$ 185,00"),
+            imageUrl="https://tourb.com.br/img/lugares/rio-de-janeiro/pao-de-acucar.jpg",
+            location="Urca, Rio de Janeiro", hours="08:30 - 21:00", price="R$ 205,00", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Bondinho+Pao+de+Acucar+Rio+de+Janeiro"),
         Attraction(id="rj-3", city="Rio de Janeiro", category="Natureza e Aventura", name="Trilha da Pedra da Gávea",
             description="Trilha desafiadora que recompensa com uma das melhores vistas do litoral carioca.",
-            imageUrl="https://images.unsplash.com/photo-1564659907532-6b5f98c8e70f?w=800&auto=format&fit=crop",
-            location="Floresta da Tijuca", hours="08:00 - 17:00", price="Gratuito"),
+            imageUrl="https://trilhandomontanhas.com/arquivos/2016-12/pedra-da-gavea-parque-nacional-da-tijuca-pnt-rj-media.jpg",
+            location="Floresta da Tijuca", hours="08:00 - 17:00", price="Gratuito", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Trilha+da+Pedra+da+Gavea+Rio+de+Janeiro"),
         Attraction(id="rj-4", city="Rio de Janeiro", category="Gastronomia", name="Santa Teresa",
             description="Bairro boêmio com restaurantes autorais, bares charmosos e arte de rua.",
-            imageUrl="https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=800&auto=format&fit=crop",
-            location="Santa Teresa, Rio de Janeiro", hours="Varia por local", price="$$"),
+            imageUrl="https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/0b/d8/20/82.jpg",
+            location="Santa Teresa, Rio de Janeiro", hours="Varia por local", price="Gratuito", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Santa+Teresa+Rio+de+Janeiro"),
         Attraction(id="rj-5", city="Rio de Janeiro", category="Esportes", name="Praia de Ipanema",
             description="A praia mais famosa do Rio, palco de esportes de praia e do pôr do sol mais bonito da cidade.",
-            imageUrl="https://images.unsplash.com/photo-1516306580123-e6e52b1b7b5f?w=800&auto=format&fit=crop",
-            location="Ipanema, Rio de Janeiro", hours="24 horas", price="Gratuito"),
+            imageUrl="https://cdn.sanity.io/images/nxpteyfv/goguides/c5ffa2a13c54cfaa98548bc24b9bf952d65a8540-1600x1066.jpg",
+            location="Ipanema, Rio de Janeiro", hours="24 horas", price="Gratuito", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Praia+de+Ipanema+Rio+de+Janeiro"),
     ],
     "Paris": [
         Attraction(id="pa-1", city="Paris", category="Cultura e História", name="Torre Eiffel",
             description="O ícone global da França, com vistas espetaculares do rio Sena.",
-            imageUrl="https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?w=800&auto=format&fit=crop",
-            location="Champ de Mars, Paris", hours="09:30 - 22:45", price="€ 29,40"),
+            imageUrl="https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/07/38/c5/1d.jpg",
+            location="Champ de Mars, Paris", hours="09:30 - 22:45", price="€ 29,40", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Torre+Eiffel+Paris"),
         Attraction(id="pa-2", city="Paris", category="Cultura e História", name="Museu do Louvre",
             description="O maior museu de arte do mundo, lar da Mona Lisa e da Vênus de Milo.",
-            imageUrl="https://images.unsplash.com/photo-1565799555432-4e32b56df7e3?w=800&auto=format&fit=crop",
-            location="Rue de Rivoli, Paris", hours="09:00 - 18:00", price="€ 22,00"),
+            imageUrl="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/30/df/da/34/the-glass-pyramid-is.jpg?w=900&h=500&s=1",
+            location="Rue de Rivoli, Paris", hours="09:00 - 18:00", price="€ 22,00", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Museu+do+Louvre+Paris"),
         Attraction(id="pa-3", city="Paris", category="Gastronomia", name="Le Marais",
             description="Bairro histórico repleto de cafés charmosos, bistrôs tradicionais e patisseries.",
             imageUrl="https://images.unsplash.com/photo-1550340499-a6c60fc8287c?w=800&auto=format&fit=crop",
-            location="3rd/4th Arrondissement", hours="Varia por local", price="$$"),
+            location="3rd/4th Arrondissement", hours="Varia por local", price="Gratuito", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Le+Marais+Paris"),
         Attraction(id="pa-4", city="Paris", category="Natureza e Aventura", name="Jardim de Luxemburgo",
             description="O parque mais amado pelos parisienses, perfeito para piqueniques e caminhadas.",
-            imageUrl="https://images.unsplash.com/photo-1431274172761-fca41d930114?w=800&auto=format&fit=crop",
-            location="6th Arrondissement", hours="07:30 - 21:30", price="Gratuito"),
+            imageUrl="https://media.cntraveler.com/photos/5952f9ca9034d21207799151/16:9/w_2560,c_limit/jardin-du-luxembourg-GettyImages-151514883.jpg",
+            location="6th Arrondissement", hours="07:30 - 21:30", price="Gratuito", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Jardim+de+Luxemburgo+Paris"),
         Attraction(id="pa-5", city="Paris", category="Esportes", name="Stade de France",
             description="O maior estádio da França, palco de eventos esportivos e shows internacionais.",
-            imageUrl="https://images.unsplash.com/photo-1540747913346-19212a729f45?w=800&auto=format&fit=crop",
-            location="Saint-Denis, Paris", hours="Varia por evento", price="A partir de € 30"),
+            imageUrl="https://media-cdn.tripadvisor.com/media/photo-s/08/1c/8e/a1/stade-de-france.jpg",
+            location="Saint-Denis, Paris", hours="Varia por evento", price="€ 30", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Stade+de+France+Paris"),
     ],
     "Tóquio": [
         Attraction(id="tk-1", city="Tóquio", category="Cultura e História", name="Templo Senso-ji",
             description="O templo budista mais antigo e significativo de Tóquio, localizado em Asakusa.",
             imageUrl="https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&auto=format&fit=crop",
-            location="Asakusa, Tóquio", hours="24 horas (Salão: 06h-17h)", price="Gratuito"),
+            location="Asakusa, Tóquio", hours="24 horas (Salão: 06h-17h)", price="Gratuito", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Templo+Senso-ji+Toquio"),
         Attraction(id="tk-2", city="Tóquio", category="Gastronomia", name="Mercado de Tsukiji",
             description="Famoso mercado de rua perfeito para provar sushi fresco e street food japonês.",
             imageUrl="https://images.unsplash.com/photo-1553621042-f6e147245754?w=800&auto=format&fit=crop",
-            location="Chuo City, Tóquio", hours="05:00 - 14:00", price="$$"),
+            location="Chuo City, Tóquio", hours="05:00 - 14:00", price="Gratuito", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Mercado+de+Tsukiji+Toquio"),
         Attraction(id="tk-3", city="Tóquio", category="Natureza e Aventura", name="Monte Fuji",
             description="O vulcão mais alto do Japão e símbolo nacional, com trilhas e vistas deslumbrantes.",
             imageUrl="https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=800&auto=format&fit=crop",
-            location="Região de Fuji-Hakone", hours="Temporada: Jul-Set", price="¥ 2.000"),
+            location="Região de Fuji-Hakone", hours="Temporada: Jul-Set", price="Gratuito", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Monte+Fuji+Japao"),
         Attraction(id="tk-4", city="Tóquio", category="Cultura e História", name="Palácio Imperial",
             description="Residência oficial do Imperador do Japão, cercada por jardins históricos e fossos.",
             imageUrl="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&auto=format&fit=crop",
-            location="Chiyoda, Tóquio", hours="09:00 - 17:00", price="Gratuito"),
+            location="Chiyoda, Tóquio", hours="09:00 - 17:00", price="Gratuito", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Palacio+Imperial+Toquio"),
         Attraction(id="tk-5", city="Tóquio", category="Esportes", name="Tokyo Dome",
             description="O maior estádio coberto do Japão, lar do time de beisebol Yomiuri Giants.",
-            imageUrl="https://images.unsplash.com/photo-1540747913346-19212a729f45?w=800&auto=format&fit=crop",
-            location="Bunkyo, Tóquio", hours="Varia por evento", price="A partir de ¥ 1.800"),
+            imageUrl="https://blackpink-fansite.com/_next/image?url=%2Fblog%2Fblackpink_tokyo_dome_2026.webp&w=3840&q=75&dpl=dpl_4tmQazN4SAXSTSBy6E32NoB8TPnP",
+            location="Bunkyo, Tóquio", hours="Varia por evento", price="1.800", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Tokyo+Dome"),
     ],
     "Nova York": [
         Attraction(id="ny-1", city="Nova York", category="Natureza e Aventura", name="Central Park",
             description="Um imenso oásis verde no meio da selva de pedra de Manhattan.",
             imageUrl="https://images.unsplash.com/photo-1568515387631-8b650bbcdb90?w=800&auto=format&fit=crop",
-            location="Manhattan, NY", hours="06:00 - 01:00", price="Gratuito"),
+            location="Manhattan, NY", hours="06:00 - 01:00", price="Gratuito", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Central+Park+Nova+York"),
         Attraction(id="ny-2", city="Nova York", category="Cultura e História", name="Broadway",
             description="O coração da indústria teatral americana com musicais inesquecíveis.",
-            imageUrl="https://images.unsplash.com/photo-1534430480872-3498386e7856?w=800&auto=format&fit=crop",
-            location="Times Square Area", hours="Noturno", price="A partir de US$ 80"),
+            imageUrl="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/09/8a/c7/ff/broadway.jpg?w=1200&h=-1&s=1",
+            location="Times Square Area", hours="Noturno", price="US$ 80", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Broadway+Nova+York"),
         Attraction(id="ny-3", city="Nova York", category="Cultura e História", name="Museu Metropolitano de Arte",
             description="Um dos maiores e mais importantes museus do mundo, com mais de 5.000 anos de história da arte.",
             imageUrl="https://images.unsplash.com/photo-1554907984-15263bfd63bd?w=800&auto=format&fit=crop",
-            location="5th Avenue, Manhattan", hours="10:00 - 17:00", price="US$ 30"),
+            location="5th Avenue, Manhattan", hours="10:00 - 17:00", price="US$ 30", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Museu+Metropolitano+de+Arte+Nova+York"),
         Attraction(id="ny-4", city="Nova York", category="Gastronomia", name="Chelsea Market",
             description="Mercado gourmet icônico dentro de uma antiga fábrica, com culinária de todo o mundo.",
             imageUrl="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop",
-            location="Chelsea, Manhattan", hours="07:00 - 21:00", price="$$"),
+            location="Chelsea, Manhattan", hours="07:00 - 21:00", price="Variável", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Chelsea+Market+Nova+York"),
         Attraction(id="ny-5", city="Nova York", category="Esportes", name="Madison Square Garden",
             description="A arena mais famosa do mundo, palco de jogos do New York Knicks e New York Rangers.",
-            imageUrl="https://images.unsplash.com/photo-1540747913346-19212a729f45?w=800&auto=format&fit=crop",
-            location="Midtown Manhattan", hours="Varia por evento", price="A partir de US$ 50"),
+            imageUrl="https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/16/b9/9d/45.jpg",
+            location="Midtown Manhattan", hours="Varia por evento", price="US$ 50", tripAdvisorUrl="https://www.tripadvisor.com.br/Search?q=Madison+Square+Garden+Nova+York"),
     ],
 }
 
@@ -180,12 +181,7 @@ async def buscar_atracoes_por_cidade(cidade: str) -> list[Attraction]:
     Tenta o TripAdvisor primeiro; se não retornar dados suficientes,
     usa a lista curada como fallback.
     """
-    atracoes_tripadvisor = await _tentar_tripadvisor(cidade)
-
-    if atracoes_tripadvisor:
-        return atracoes_tripadvisor
-
-    # Fallback: lista curada (normaliza a busca para case-insensitive)
+    # Prioridade: lista curada (normaliza a busca para case-insensitive)
     cidade_normalizada = next(
         (c for c in _ATRACOES_CURADAS if c.lower() == cidade.lower()),
         None,
@@ -193,6 +189,11 @@ async def buscar_atracoes_por_cidade(cidade: str) -> list[Attraction]:
     if cidade_normalizada:
         logger.info("Explorar: usando lista curada para '%s'", cidade)
         return _ATRACOES_CURADAS[cidade_normalizada]
+
+    # Fallback: tenta o TripAdvisor
+    atracoes_tripadvisor = await _tentar_tripadvisor(cidade)
+    if atracoes_tripadvisor:
+        return atracoes_tripadvisor
 
     logger.warning("Explorar: cidade '%s' não encontrada em nenhuma fonte", cidade)
     return []

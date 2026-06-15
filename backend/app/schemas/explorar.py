@@ -12,6 +12,9 @@ class Attraction(BaseModel):
     location: str
     hours: str
     price: str
+    longDescription: Optional[str] = None
+    tripAdvisorUrl: Optional[str] = None
+    reviews: Optional[list[dict]] = None
 
 
 class DestinoPopular(BaseModel):

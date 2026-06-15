@@ -19,6 +19,13 @@ export interface Attraction {
   location: string;
   hours: string;
   price: string;
+  longDescription?: string;
+  tripAdvisorUrl?: string;
+  reviews?: {
+    author: string;
+    text: string;
+    rating: number;
+  }[];
 }
 
 export interface DestinoPopular {

@@ -5,13 +5,16 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - db
       - redis
     environment:
       - DATABASE_URL=postgresql+asyncpg://admin:adminpassword@db:5432/viajaai_db
-      - GEMINI_API_KEY=cole_sua_chave_do_google_aqui
+      - DATABASE_URL_SYNC=postgresql://admin:adminpassword@db:5432/viajaai_db
+      - GEMINI_API_KEY=AIzaSyBhcxuDUe7nK2iHBhU5d7BAXDiDbAEx8Ks
       - REDIS_URL=redis://redis:6379
+      - WATCHFILES_FORCE_POLLING=true
 
   db:
     image: postgres:15

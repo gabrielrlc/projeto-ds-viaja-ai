@@ -48,7 +48,8 @@ export default function ExplorarPage() {
         setAtracoes(data.atracoes);
         setUsandoMock(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Erro ao buscar atrações do backend, usando mock:", err);
         // Fallback: filtra os dados do mock local para a cidade selecionada
         setAtracoes(
           (ATRACOES_MOCK as Attraction[]).filter((a) => a.city === selectedCity),

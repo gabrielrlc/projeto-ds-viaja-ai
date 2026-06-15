@@ -29,8 +29,8 @@ class SessaoViagem(BaseModel):
     estilo: Optional[str] = None
     interesses: Optional[str] = None
     voos_disponiveis: Optional[list] = None
-    voo_ida_escolhido: Optional[str] = None
-    voo_volta_escolhido: Optional[str] = None
+    voo_ida_escolhido: Optional[dict] = None
+    voo_volta_escolhido: Optional[dict] = None
     hoteis_disponiveis: Optional[list] = None
     hotel_escolhido: Optional[dict] = None
 

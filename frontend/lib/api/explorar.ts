@@ -7,7 +7,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
  * Usado para montar os filtros e cards de destino da tela /explorar.
  */
 export async function buscarDestinos(): Promise<RespostaDestinos> {
-  const res = await fetch(`${API_URL}/api/explorar/destinos`);
+  const res = await fetch(`${API_URL}/api/explorar/destinos`, { cache: "no-store" });
   if (!res.ok) throw new Error(`Erro ao buscar destinos: ${res.status}`);
   return res.json();
 }
@@ -19,6 +19,7 @@ export async function buscarDestinos(): Promise<RespostaDestinos> {
 export async function buscarAtracoes(cidade: string): Promise<RespostaAtracoes> {
   const res = await fetch(
     `${API_URL}/api/explorar/atracoes/${encodeURIComponent(cidade)}`,
+    { cache: "no-store" }
   );
   if (!res.ok) throw new Error(`Erro ao buscar atrações: ${res.status}`);
   return res.json();
