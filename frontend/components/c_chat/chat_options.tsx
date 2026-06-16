@@ -31,6 +31,9 @@ export function ChatOptions({
       }`}
     >
       {opcoes.map((opcao, idx) => {
+        // Staggered delay for each option
+        const delay = `${idx * 80}ms`;
+
         if (
           (etapaAtual === "voo_ida" || etapaAtual === "voo_volta") &&
           opcoesObjetos.voos
@@ -43,7 +46,8 @@ export function ChatOptions({
             <div
               key={idx}
               onClick={() => enviarMensagem(opcao)}
-              className="cursor-pointer min-w-[320px] transition-transform hover:-translate-y-1 active:scale-95 shrink-0"
+              className="cursor-pointer min-w-[320px] transition-transform hover:-translate-y-1 active:scale-95 shrink-0 animate-chat-option"
+              style={{ animationDelay: delay }}
             >
               <CardVoo {...montarPropsVoo(v, dadosColetados, tipo)} />
             </div>
@@ -58,7 +62,8 @@ export function ChatOptions({
             <div
               key={idx}
               onClick={() => enviarMensagem(opcao)}
-              className="cursor-pointer min-w-[320px] transition-transform hover:-translate-y-1 active:scale-95 shrink-0"
+              className="cursor-pointer min-w-[320px] transition-transform hover:-translate-y-1 active:scale-95 shrink-0 animate-chat-option"
+              style={{ animationDelay: delay }}
             >
               <CardHotel {...montarPropsHotel(h, dadosColetados)} />
             </div>
@@ -69,7 +74,8 @@ export function ChatOptions({
           <div
             key={opcao}
             onClick={() => enviarMensagem(opcao)}
-            className="cursor-pointer flex items-center justify-center px-5 py-2.5 rounded-full border border-[#F2D6D6] bg-[#FCF3F3] text-[#A63C3C] text-sm font-bold hover:bg-[#F8E8E8] shadow-sm transition-transform active:scale-95 shrink-0 whitespace-nowrap"
+            className="cursor-pointer flex items-center justify-center px-5 py-2.5 rounded-full border border-[#F2D6D6] bg-[#FCF3F3] text-[#A63C3C] text-sm font-bold hover:bg-[#F8E8E8] shadow-sm transition-transform active:scale-95 shrink-0 whitespace-nowrap animate-chat-option"
+            style={{ animationDelay: delay }}
           >
             {opcao}
           </div>

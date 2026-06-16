@@ -125,4 +125,114 @@
     scrollbar-width: thin;
     scrollbar-color: #EACFC4 transparent;
   }
+
+  /* Chat message entrance animations */
+  @keyframes chat-slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-16px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes chat-slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(16px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+  }
+
+  @keyframes chat-fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes chat-scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-chat-bot {
+    animation: chat-slide-in-left 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-chat-user {
+    animation: chat-slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-chat-option {
+    animation: chat-fade-in-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .animate-chat-loading {
+    animation: chat-scale-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+/* Markdown styles inside bot chat messages */
+.chat-markdown {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.chat-markdown p {
+  margin: 0;
+}
+
+.chat-markdown p + p {
+  margin-top: 0.5em;
+}
+
+.chat-markdown strong {
+  font-weight: 700;
+}
+
+.chat-markdown em {
+  font-style: italic;
+}
+
+.chat-markdown ul,
+.chat-markdown ol {
+  margin: 0.4em 0;
+  padding-left: 1.4em;
+}
+
+.chat-markdown li {
+  margin: 0.15em 0;
+}
+
+.chat-markdown a {
+  color: #D68585;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.chat-markdown a:hover {
+  color: #C57474;
+}
+
+.chat-markdown code {
+  background: #f3eded;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.9em;
 }

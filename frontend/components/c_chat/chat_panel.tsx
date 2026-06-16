@@ -1,6 +1,6 @@
 "use client";
 
-import type { RefObject } from "react";
+import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import { ChatHeader } from "@/components/c_chat/chat_header";
 import { ChatInput } from "@/components/c_chat/chat_input";
 import { ChatLoading } from "@/components/c_chat/chat_loading";
@@ -40,13 +40,51 @@ export function ChatPanel({
   bottomRef,
   enviarMensagem,
 }: ChatPanelProps) {
+  // Track how many messages have completed their typing animation.
+  // All messages up to this count are shown fully; the next bot message animates.
+  const [mensagensAnimadas, setMensagensAnimadas] = useState(0);
+  const prevCountRef = useRef(mensagens.length);
+
+  // When the messages array grows, we keep `mensagensAnimadas` as-is so
+  // the newly added bot message(s) will get the typing effect.
+  // When it shrinks (chat reset), reset the counter.
+  useEffect(() => {
+    if (mensagens.length < prevCountRef.current) {
+      // Chat was reset
+      setMensagensAnimadas(0);
+    }
+    prevCountRef.current = mensagens.length;
+  }, [mensagens.length]);
+
+  const marcarAnimada = useCallback(() => {
+    setMensagensAnimadas((prev) => prev + 1);
+  }, []);
+
+  // Find the index of the first bot message that hasn't been animated yet.
+  let proximaBotParaAnimar = -1;
+  let botCount = 0;
+  for (let i = 0; i < mensagens.length; i++) {
+    if (mensagens[i].remetente === "bot") {
+      if (botCount >= mensagensAnimadas) {
+        proximaBotParaAnimar = i;
+        break;
+      }
+      botCount++;
+    }
+  }
+
   return (
     <div className="flex-1 flex flex-col h-full bg-white rounded-3xl shadow-sm border overflow-hidden">
       <ChatHeader roteiroIa={roteiroIa} />
 
       <div className="flex-1 p-6 bg-white overflow-y-auto flex flex-col gap-4 custom-scrollbar">
         {mensagens.map((msg, idx) => (
-          <ChatMessage key={idx} mensagem={msg} />
+          <ChatMessage
+            key={idx}
+            mensagem={msg}
+            animar={idx === proximaBotParaAnimar}
+            onAnimacaoFim={idx === proximaBotParaAnimar ? marcarAnimada : undefined}
+          />
         ))}
 
         {carregando && <ChatLoading />}
