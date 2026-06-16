@@ -65,6 +65,17 @@ export function useChat() {
 
   useEffect(() => {
     async function iniciar() {
+      // Limpa todo o estado anterior para garantir que roteiro/dados de
+      // uma conversa passada não continuem aparecendo na aba do roteiro.
+      if (typeof window !== "undefined") {
+        window.localStorage.removeItem(STORAGE_KEY);
+      }
+      setItineraryId(null);
+      setRoteiroIa(null);
+      setOpcoesObjetos({});
+      setDadosColetados(DADOS_INICIAIS);
+      setOpcoes([]);
+      setEtapaAtual("destino");
       setCarregando(true);
       try {
         const data = await iniciarChat();
@@ -220,9 +231,9 @@ export function useChat() {
       setMensagens(
         avisoInicial
           ? [
-              { remetente: "bot", texto: avisoInicial },
-              { remetente: "bot", texto: data.mensagem_bot },
-            ]
+            { remetente: "bot", texto: avisoInicial },
+            { remetente: "bot", texto: data.mensagem_bot },
+          ]
           : [{ remetente: "bot", texto: data.mensagem_bot }],
       );
       setOpcoes(data.opcoes?.length ? data.opcoes : []);
