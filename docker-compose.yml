@@ -9,6 +9,8 @@ services:
     depends_on:
       - db
       - redis
+    env_file:
+      - ./backend/.env
     environment:
       - DATABASE_URL=postgresql+asyncpg://admin:adminpassword@db:5432/viajaai_db
       - DATABASE_URL_SYNC=postgresql://admin:adminpassword@db:5432/viajaai_db
